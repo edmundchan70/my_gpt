@@ -2,7 +2,10 @@ import React, { useRef, useState } from 'react'
 import AI_ICON from "../../assets/AI_ICON.jpeg" 
 import USER_ICON from "../../assets/USER_ICON.jpeg" 
 import {AiOutlineSend} from "react-icons/ai"
-type Props = {}
+import { Config } from '../DTO/Config.dto'
+type Props = {
+  config : Config
+}
 type Message ={
   send_time: Date
   msg: String 
@@ -10,7 +13,7 @@ type Message ={
 } 
  
  
-function Message_container({}: Props) {
+function Message_container({config} : Props) {
     const testMessage  : Message[]  = [{
       send_time:  new Date(), 
       msg: "HELLo, AI",
