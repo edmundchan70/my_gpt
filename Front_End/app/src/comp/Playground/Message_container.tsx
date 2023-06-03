@@ -41,7 +41,7 @@ function Message_container({}: Props) {
     userInput.current!.value = "";
   }
   return (
-    <div className='bg-slate-600 text-slate-50'>
+    <div >
         {msg_list?.map(
           (msg: Message) =>{ 
             return (
@@ -53,7 +53,7 @@ function Message_container({}: Props) {
             )
           }
         )}
-         <div className='bg-slate-600 text-slate-50'>
+         <div >
                <label className="flex items-center" > Enter your message here: 
                 <div className='border-slate-50 ml-3.5 border-2 rounded'>
                       <input ref={userInput}  className='bg-slate-600'  type="text" placeholder='Enter your prompt'/> 

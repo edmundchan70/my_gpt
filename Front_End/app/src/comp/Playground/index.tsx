@@ -11,7 +11,7 @@ function PlayGround({}: Props) {
     userInput.current!.value = "";
   }
   return (
-    <div className=''>
+    <div className='col-span-4'>
           <Message_container />
     </div>
   )
