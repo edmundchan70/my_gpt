@@ -16,7 +16,7 @@ function Home({}: Props) {
   return (
     <div className='grid grid-cols-5 bg-slate-600 text-slate-50'>
       <Control_Panel />
-      <PlayGround />
+ 
     </div>
   )
 }
