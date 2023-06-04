@@ -3,9 +3,11 @@ import AI_ICON from "../../assets/AI_ICON.jpeg"
 import USER_ICON from "../../assets/USER_ICON.jpeg" 
 import {AiOutlineSend} from "react-icons/ai"
 import { OpenAI } from "langchain/llms/openai";
+import { StructuredOutputParser } from "langchain/output_parsers";
 import { ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder, PromptTemplate ,SystemMessagePromptTemplate} from "langchain/prompts";
-import { ConversationalRetrievalQAChain, LLMChain, MapReduceDocumentsChain, RefineDocumentsChain, RetrievalQAChain, StuffDocumentsChain } from "langchain/chains";
+import { ConversationChain,ConversationalRetrievalQAChain, LLMChain, MapReduceDocumentsChain, RefineDocumentsChain, RetrievalQAChain, StuffDocumentsChain } from "langchain/chains";
 import { Config } from '../DTO/Config.dto'
+import { json } from 'stream/consumers';
  
 type Props = {
   config : Config
@@ -15,7 +17,7 @@ type Message ={
   msg: String 
   sender:  "user" | "AI"
 } 
-type Chain = ConversationalRetrievalQAChain|  LLMChain |MapReduceDocumentsChain| RefineDocumentsChain|  RetrievalQAChain| StuffDocumentsChain 
+type Chain = ConversationalRetrievalQAChain|  LLMChain |MapReduceDocumentsChain| RefineDocumentsChain|  RetrievalQAChain| StuffDocumentsChain  | ConversationChain
 
  
 function Message_container({config} : Props) {
@@ -64,15 +66,26 @@ function Message_container({config} : Props) {
       sender:"AI"
   }
   ]
-  
+  /* unstable respond type 
   const chatPrompt = ChatPromptTemplate.fromPromptMessages([
     SystemMessagePromptTemplate.fromTemplate(config.prompt_template),
     new MessagesPlaceholder("chat_history"),
-    HumanMessagePromptTemplate.fromTemplate("{input}")
-  ])
-  const static_prompt = PromptTemplate.fromTemplate(config.prompt_template)
+    HumanMessagePromptTemplate.fromTemplate("{input}"),
+    
+  ])*/
+  const parser = StructuredOutputParser.fromNamesAndDescriptions({
+    answer: "answer to the user's question",
+    source: "Thought process before reaching the respond"
+  })
+  const formatInstructions = parser.getFormatInstructions();
+  console.log('formatInstruction',formatInstructions)
+  const prompt = new PromptTemplate({
+    template:config.prompt_template,
+    inputVariables: ["input"],
+    partialVariables:{format_instruction: formatInstructions}
+  })
   //default set to LLMChain 
-  const [chain, set_chain] = useState<Chain>(new LLMChain(new LLMChain({llm:config.model,prompt:chatPrompt,memory:config.memory})));
+  const [chain, set_chain] = useState<Chain>(new ConversationChain({llm:config.model,prompt:prompt,memory:config.memory}));
   const [msg_list, set_msg_list] = useState<Message[]>([])
   const userInput = useRef<HTMLInputElement | null>(null);
   const getInput = async () =>{
@@ -86,9 +99,12 @@ function Message_container({config} : Props) {
     const resp = await chain.call({input:userInput.current!.value  })
     await config.memory.loadMemoryVariables({})
     //might need error control here
+    console.log(resp.response);
+    const data = JSON.parse(resp.response);
+    console.log("llm resp: " ,data.data.content)
     const ai_msg :Message ={
       send_time: new Date(),
-      msg :resp.text,
+      msg :data.data.content,
       sender: 'AI'
     }
     set_msg_list((prev)=>[

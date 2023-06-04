@@ -102,7 +102,9 @@ function Control_Panel({ }: Props) {
         <label>
           Chain type:
           <select onChange={e => { set_chain_type(e.target.value) }} className=' bg-slate-600'>
-            <option value={"LLMChain"}>LLMChain(default)</option>
+           <option value={"ConversationChain"}>ConversationChain(default)</option>
+            <option value={"LLMChain"}>LLMChain</option>
+            
             <option value={"StuffDocumentsChain"}>StuffDocumentsChain</option>
             <option value={"MapReduceDocumentsChain"}>MapReduceDocumentsChain</option>
             <option value={"RefineDocumentsChain"} >RefineDocumentsChain</option>
