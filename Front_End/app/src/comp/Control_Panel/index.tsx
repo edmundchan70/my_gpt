@@ -26,12 +26,12 @@ function Control_Panel({ }: Props) {
       memory_method: memory ,
       chain_type: chain_type,
       model:  model ,
-      memory: memory==="BufferMemory" ? new BufferMemory({memoryKey: "chat_history"}) : new ConversationSummaryMemory({llm:model})
+      memory: memory==="BufferMemory" ? new BufferMemory({memoryKey: "chat_history"}) : new ConversationSummaryMemory({llm:model,memoryKey:"chat_history"})
     }
     set_config(config_obj)
   }
  
-  const TEMPLATE_PROMPT = "The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."
+  const TEMPLATE_PROMPT =`The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. Current conversation: {chat_history}, Human: {input}`
 
   return (
     <>
@@ -79,7 +79,7 @@ function Control_Panel({ }: Props) {
 
       <div className='flex flex-col'>
         <label>Setting of the bot</label>
-        <textarea placeholder={TEMPLATE_PROMPT} className=' bg-slate-600 border-slate-50 border-2 h-52 ' ref={setting_bot}></textarea>
+        <textarea placeholder={TEMPLATE_PROMPT} defaultValue={TEMPLATE_PROMPT} className=' bg-slate-600 border-slate-50 border-2 h-52 ' ref={setting_bot}></textarea>
       </div>
 
       <div>
