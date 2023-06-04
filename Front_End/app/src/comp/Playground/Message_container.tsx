@@ -2,6 +2,9 @@ import React, { useRef, useState } from 'react'
 import AI_ICON from "../../assets/AI_ICON.jpeg" 
 import USER_ICON from "../../assets/USER_ICON.jpeg" 
 import {AiOutlineSend} from "react-icons/ai"
+import { OpenAI } from "langchain/llms/openai";
+import { PromptTemplate } from "langchain/prompts";
+
 import { Config } from '../DTO/Config.dto'
 type Props = {
   config : Config
@@ -14,7 +17,7 @@ type Message ={
  
  
 function Message_container({config} : Props) {
-    const testMessage  : Message[]  = [{
+  const testMessage  : Message[]  = [{
       send_time:  new Date(), 
       msg: "HELLo, AI",
       sender:"user"
@@ -25,7 +28,8 @@ function Message_container({config} : Props) {
       sender:"AI"
   }
   ]
- 
+   
+  const static_prompt = config.prompt_template +"Current conversation: {chat_history}, Human: {input}"
   
   const [msg_list, set_msg_list] = useState<Message[]>(testMessage)
   const userInput = useRef<HTMLInputElement | null>(null);
@@ -50,7 +54,6 @@ function Message_container({config} : Props) {
             return (
                 <div className='flex space-x-52 '>
                     <img src={msg.sender==="AI"? AI_ICON  :USER_ICON  }  className='w-14 '/>
-                    <h5 >{msg.send_time.toUTCString()}</h5> 
                     <h5>{msg.msg}</h5>
                 </div>
             )

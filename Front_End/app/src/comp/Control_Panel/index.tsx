@@ -1,26 +1,32 @@
 import { Console } from 'console';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import PlayGround from '../Playground';
 import { Config } from '../DTO/Config.dto';
-
+import { OpenAI } from "langchain/llms/openai"
+import { BufferMemory, ConversationSummaryMemory } from 'langchain/memory';
 type Props = {}
  
 function Control_Panel({ }: Props) {
   const [config, set_config] = useState<Config | null>(null);
-  const [temp,set_temp] =   useState<number >(1.0);
+  const [temp,set_temp] =   useState<number >(0.0);
   const [parser, set_parser] = useState<string | null>(null);
   const [memory, set_memory_method] = useState<string >("ConversationSummaryMemory");
   const [chain_type, set_chain_type] = useState<string>("LLMChain");
+  const [model_name, setmodel_name] = useState<string> ("gpt-3.5-turbo");
   const setting_bot = useRef<HTMLTextAreaElement | null>(null);
- 
+
+  
   const submit = () => {
+    const api_key = localStorage.getItem('api_key')! //api_key is checked already
+    const model = new OpenAI({temperature: temp , openAIApiKey: api_key,verbose:true,modelName:model_name})
     const config_obj: Config = {
       temperature: temp,
-      module: "GPT-3.5",
-      setting_bot:setting_bot.current!.value,
+      prompt_template:setting_bot.current!.value,
       resp_parser: parser , 
       memory_method: memory ,
-      chain_type: chain_type
+      chain_type: chain_type,
+      model:  model ,
+      memory: memory==="BufferMemory" ? new BufferMemory({memoryKey: "chat_history"}) : new ConversationSummaryMemory({llm:model})
     }
     set_config(config_obj)
   }
@@ -61,7 +67,13 @@ function Control_Panel({ }: Props) {
         </label>
       </div>
       <div>
-        <label>Module : GPT-3.5</label>
+        <label>Module : 
+          <select onChange={(e)=>setmodel_name(e.target.value)} className=' bg-slate-600'>
+          <option value={"gpt-3.5-turbo"}>gpt-3.5-turbo</option>
+          <option value={"text-davinci-003"}>text-davinci-003</option>
+          <option value={"gpt-4"}>gpt-4</option>
+          </select>
+        </label>
       </div>
 
 
@@ -81,7 +93,7 @@ function Control_Panel({ }: Props) {
       <div>
         <label>Memory method:
           <select onChange={e => { set_memory_method(e.target.value) }} className=' bg-slate-600'>
-            <option value={"Buffer memory"}>BufferMemory</option>
+            <option value={"BufferMemory"}>BufferMemory</option>
             <option value={"ConversationSummaryMemory"}>ConversationSummaryMemory</option>
           </select>
         </label>
