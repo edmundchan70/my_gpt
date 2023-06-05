@@ -2,25 +2,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import AI_ICON from "../../assets/AI_ICON.jpeg" 
 import USER_ICON from "../../assets/USER_ICON.jpeg" 
 import {AiOutlineSend} from "react-icons/ai"
-import { OpenAI } from "langchain/llms/openai";
-import { StructuredOutputParser } from "langchain/output_parsers";
-import { ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder, PromptTemplate ,SystemMessagePromptTemplate} from "langchain/prompts";
-import { ConversationChain,ConversationalRetrievalQAChain, LLMChain, MapReduceDocumentsChain, RefineDocumentsChain, RetrievalQAChain, StuffDocumentsChain } from "langchain/chains";
-import { Config } from '../DTO/Config.dto'
-import { json } from 'stream/consumers';
  
-type Props = {
-  config : Config
-}
-type Message ={
-  send_time: Date
-  msg: String 
-  sender:  "user" | "AI"
-} 
-type Chain = ConversationalRetrievalQAChain|  LLMChain |MapReduceDocumentsChain| RefineDocumentsChain|  RetrievalQAChain| StuffDocumentsChain  | ConversationChain
 
- 
-function Message_container({config} : Props) {
+import {  Message } from '../DTO/Types';
+import { Conversation } from '../Chain/Chain';
+type Props = {
+  chain_obj : Conversation
+}
+function Message_container({chain_obj} : Props) {
  /*
   useEffect(() => {
     
@@ -73,19 +62,13 @@ function Message_container({config} : Props) {
     HumanMessagePromptTemplate.fromTemplate("{input}"),
     
   ])*/
-  const parser = StructuredOutputParser.fromNamesAndDescriptions({
-    answer: "answer to the user's question",
-    source: "Thought process before reaching the respond"
-  })
-  const formatInstructions = parser.getFormatInstructions();
-  console.log('formatInstruction',formatInstructions)
-  const prompt = new PromptTemplate({
-    template:config.prompt_template,
-    inputVariables: ["input"],
-    partialVariables:{format_instruction: formatInstructions}
-  })
-  //default set to LLMChain 
-  const [chain, set_chain] = useState<Chain>(new ConversationChain({llm:config.model,prompt:prompt,memory:config.memory}));
+   
+  /**
+   * 1. Chain.run()
+   * 2. load memory()
+   * 
+   */
+  //default set to ConversationChain 
   const [msg_list, set_msg_list] = useState<Message[]>([])
   const userInput = useRef<HTMLInputElement | null>(null);
   const getInput = async () =>{
@@ -96,15 +79,14 @@ function Message_container({config} : Props) {
       msg: userInput.current!.value ,
       sender: "user"
     }
-    const resp = await chain.call({input:userInput.current!.value  })
-    await config.memory.loadMemoryVariables({})
+    const resp =  await chain_obj.call_chain(userInput.current!.value)
     //might need error control here
-    console.log(resp.response);
-    const data = JSON.parse(resp.response);
-    console.log("llm resp: " ,data.data.content)
+    console.log(resp);
+    const data = resp
+    console.log("llm resp: " ,resp)
     const ai_msg :Message ={
       send_time: new Date(),
-      msg :data.data.content,
+      msg :data,
       sender: 'AI'
     }
     set_msg_list((prev)=>[
@@ -123,15 +105,13 @@ function Message_container({config} : Props) {
                     <h5>{msg.msg}</h5>
                 </div>
             )
-          }
-        )}
-         <div >
+          })}
+         <div>
                <label className="flex items-center" > Enter your message here: 
                 <div className='border-slate-50 ml-3.5 border-2 rounded'>
                       <input ref={userInput}  className='bg-slate-600'  type="text" placeholder='Enter your prompt'/> 
                     <button onClick={getInput}  type='submit'><AiOutlineSend /></button>
                 </div>
-               
                </label> 
           </div>
         

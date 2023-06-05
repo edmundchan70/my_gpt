@@ -3,34 +3,60 @@ import React, { memo, useEffect, useRef, useState } from 'react'
 import PlayGround from '../Playground';
 import { Config } from '../DTO/Config.dto';
 import { OpenAI } from "langchain/llms/openai"
-import { BufferMemory, ConversationSummaryMemory } from 'langchain/memory';
+import { BaseMemory, BufferMemory, ConversationSummaryMemory } from 'langchain/memory';
+import { BasePromptTemplate, PromptTemplate } from 'langchain/prompts';
+import { BaseOutputParser } from 'langchain/dist/schema/output_parser';
+import { StructuredOutputParser } from 'langchain/output_parsers';
+
+import { BaseLanguageModel } from 'langchain/dist/base_language';
+import { Conversation } from '../Chain/Chain';
 type Props = {}
- 
+function construct_prompt(raw_prompt:string,parser : string) : BasePromptTemplate{
+
+  return  PromptTemplate.fromTemplate(raw_prompt)
+}
+function construct_parser(raw_parser:string) :string{
+  // parser.getFormatInstructions()  is the default output_parser
+  const parser = StructuredOutputParser.fromNamesAndDescriptions({
+    answer: "answer to the user's question",
+    source: "source used to answer the user's question, should be a website.",
+  });
+  return raw_parser===""?  parser.getFormatInstructions() : raw_parser
+}
+function construct_model(temp:number, api_key:string , verbose:boolean,model_name:string):BaseLanguageModel{
+  //right now it's limited to openAI.
+  return  new OpenAI({temperature: temp , openAIApiKey: api_key,verbose:true,modelName:model_name})
+}
 function Control_Panel({ }: Props) {
-  const [config, set_config] = useState<Config | null>(null);
+  const [chain_obj, set_chain_obj] = useState<Conversation | null>(null);
   const [temp,set_temp] =   useState<number >(0.0);
-  const [parser, set_parser] = useState<string | null>(null);
+  const [parser, set_parser] = useState<string >("");
   const [memory, set_memory_method] = useState<string >("ConversationSummaryMemory");
   const [chain_type, set_chain_type] = useState<string>("LLMChain");
   const [model_name, setmodel_name] = useState<string> ("gpt-3.5-turbo");
   const setting_bot = useRef<HTMLTextAreaElement | null>(null);
-
-  
+  const [verbose, setverbose] = useState<boolean>(true);
   const submit = () => {
+    //validate input zone
+    console.log((setting_bot.current!.value))
+    if(!setting_bot.current){
+      alert("Please enter something for prompts!");
+      return;
+    }
     const api_key = localStorage.getItem('api_key')! //api_key is checked already
-    const model = new OpenAI({temperature: temp , openAIApiKey: api_key,verbose:true,modelName:model_name})
+    const model = construct_model( temp , api_key,verbose,model_name)
     const config_obj: Config = {
       temperature: temp,
-      prompt_template:setting_bot.current!.value,
-      resp_parser: parser , 
-      memory_method: memory ,
+      prompt_template:construct_prompt(setting_bot.current!.value,construct_parser(parser)),
+      resp_parser: construct_parser(parser) , 
       chain_type: chain_type,
       model:  model ,
       memory: memory==="BufferMemory" ? new BufferMemory({memoryKey: "chat_history"}) : new ConversationSummaryMemory({llm:model,memoryKey:"chat_history"})
-    }
-    set_config(config_obj)
+    };
+
+    set_chain_obj(new Conversation(config_obj))
   }
- 
+    
   const TEMPLATE_PROMPT =`The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. Current conversation: {chat_history}, Human: {input}`
 
   return (
@@ -75,8 +101,6 @@ function Control_Panel({ }: Props) {
           </select>
         </label>
       </div>
-
-
       <div className='flex flex-col'>
         <label>Setting of the bot</label>
         <textarea placeholder={TEMPLATE_PROMPT} defaultValue={TEMPLATE_PROMPT} className=' bg-slate-600 border-slate-50 border-2 h-52 ' ref={setting_bot}></textarea>
@@ -116,7 +140,7 @@ function Control_Panel({ }: Props) {
       <button onClick={submit} type='submit' className='border-white border-2'>Create chain and chat!</button>
     </div >
 
-     {config&& <PlayGround  config={config}/>}
+     {chain_obj&& <PlayGround  chain_obj={chain_obj}/>}
     </>
      
   )

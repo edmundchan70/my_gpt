@@ -1,16 +1,17 @@
 import React, { useRef } from 'react'
 import Message_container from './Message_container'
-import { Config } from '../DTO/Config.dto';
  
-type Props = {config : Config}
+import { Conversation } from '../Chain/Chain';
+ 
+type Props = {chain_obj : Conversation}
 
-function PlayGround({config}: Props) {
+function PlayGround({chain_obj}: Props) {
   const userInput = useRef<HTMLInputElement | null>(null);
-  console.log(config)
+  console.log(chain_obj)
  
   return (
     <div className='col-span-4'>
-          <Message_container config={config} />
+          <Message_container chain_obj={chain_obj} />
     </div>
   )
 }
