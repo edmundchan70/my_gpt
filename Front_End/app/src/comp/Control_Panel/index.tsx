@@ -1,4 +1,4 @@
-import { Console } from 'console';
+
 import React, { memo, useEffect, useRef, useState } from 'react'
 import PlayGround from '../Playground';
 import { Config } from '../DTO/Config.dto';
@@ -9,12 +9,10 @@ import { BaseOutputParser } from 'langchain/dist/schema/output_parser';
 import { StructuredOutputParser } from 'langchain/output_parsers';
 
 import { BaseLanguageModel } from 'langchain/dist/base_language';
-import { Conversation } from '../Chain/Chain';
+import { Conversation } from '../Chain/Conversation.class';
 type Props = {}
-function construct_prompt(raw_prompt:string,parser : string) : BasePromptTemplate{
-
-  return  PromptTemplate.fromTemplate(raw_prompt)
-}
+function construct_prompt(raw_prompt:string,parser : string) : PromptTemplate{
+  return  new PromptTemplate({template:raw_prompt,inputVariables:["input"],partialVariables:{format_instructions: parser}})}
 function construct_parser(raw_parser:string) :string{
   // parser.getFormatInstructions()  is the default output_parser
   const parser = StructuredOutputParser.fromNamesAndDescriptions({
@@ -53,7 +51,7 @@ function Control_Panel({ }: Props) {
       model:  model ,
       memory: memory==="BufferMemory" ? new BufferMemory({memoryKey: "chat_history"}) : new ConversationSummaryMemory({llm:model,memoryKey:"chat_history"})
     };
-
+    console.log(config_obj.prompt_template);
     set_chain_obj(new Conversation(config_obj))
   }
     

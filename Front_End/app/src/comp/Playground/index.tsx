@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import Message_container from './Message_container'
  
-import { Conversation } from '../Chain/Chain';
+import { Conversation } from '../Chain/Conversation.class';
  
 type Props = {chain_obj : Conversation}
 

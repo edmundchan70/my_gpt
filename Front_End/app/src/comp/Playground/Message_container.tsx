@@ -5,7 +5,7 @@ import {AiOutlineSend} from "react-icons/ai"
  
 
 import {  Message } from '../DTO/Types';
-import { Conversation } from '../Chain/Chain';
+import { Conversation } from '../Chain/Conversation.class';
 type Props = {
   chain_obj : Conversation
 }
