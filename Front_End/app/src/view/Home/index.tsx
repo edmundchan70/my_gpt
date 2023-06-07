@@ -14,7 +14,7 @@ function Home({}: Props) {
         nav('/Login');
   },[])
   return (
-    <div className='grid grid-cols-5 bg-slate-600 text-slate-50'>
+    <div className='grid grid-cols-5 bg-slate-600 text-slate-50 max-wd h-screen'>
       <Control_Panel />
  
     </div>

@@ -2,19 +2,20 @@ import React, { useEffect, useRef, useState } from 'react'
 import AI_ICON from "../../assets/AI_ICON.jpeg" 
 import USER_ICON from "../../assets/USER_ICON.jpeg" 
 import {AiOutlineSend} from "react-icons/ai"
- 
+import {  ChatPromptTemplate, HumanMessagePromptTemplate, PromptTemplate, SystemMessagePromptTemplate } from 'langchain/prompts';
 
 import {  Message } from '../DTO/Types';
-import { Conversation } from '../Chain/Conversation.class';
+import { Conversation } from '../Conversation/Conversation.class';
+import { OpenAI } from "langchain/llms/openai"
+import { ConversationSummaryMemory } from 'langchain/memory';
+import { ConversationChain } from 'langchain/chains';
 type Props = {
   chain_obj : Conversation
 }
 function Message_container({chain_obj} : Props) {
  /*
   useEffect(() => {
-    
     let initializedChain: Chain | null = null;
-
     // Check the config.chain_type value and set the corresponding chain
     switch (config.chain_type) {
       case "ConversationalRetrievalQAChain":
@@ -62,7 +63,6 @@ function Message_container({chain_obj} : Props) {
     HumanMessagePromptTemplate.fromTemplate("{input}"),
     
   ])*/
-   
   /**
    * 1. Chain.run()
    * 2. load memory()
@@ -79,20 +79,39 @@ function Message_container({chain_obj} : Props) {
       msg: userInput.current!.value ,
       sender: "user"
     }
-    const resp =  await chain_obj.call_chain(userInput.current!.value)
+    console.log(chain_obj)
+    console.log(userInput.current!.value)
+    const api_key = localStorage.getItem('api_key')!
+    const TEMPLATE_PROMPT =`The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. Current conversation: {{chat_history}}, Human: {{input}}`
+    const model = new OpenAI({temperature: 1.0 , openAIApiKey: api_key,verbose:true,modelName:"gpt-3.5-turbo"})
+    const prompt =  new PromptTemplate({template:TEMPLATE_PROMPT,inputVariables:["input"],})
+    //hardcode chain 
+    const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+      SystemMessagePromptTemplate.fromTemplate(
+        "You are a helpful assistant that try your best to help human ."
+      ),
+      HumanMessagePromptTemplate.fromTemplate("{input}"),
+    ]);
+    const memory =  new ConversationSummaryMemory({llm:model,memoryKey:"chat_history"})
+    const chain =  new ConversationChain({llm:model,prompt:chatPrompt ,memory:memory})
+    const resp= await chain.call({input: userInput.current!.value})
+   // const resp =  await chain_obj.call_chain(userInput.current!.value)
     //might need error control here
     console.log(resp);
-    const data = resp
-    console.log("llm resp: " ,resp)
+    const data = resp.text
+    console.log("llm resp: " ,resp.text)
     const ai_msg :Message ={
       send_time: new Date(),
       msg :data,
       sender: 'AI'
     }
+    //update memory
+   // chain_obj.load_memory()
     set_msg_list((prev)=>[
       ...prev,user_msg,ai_msg
     ])
     //clean up input 
+    
     userInput.current!.value = "";
   }
   return (

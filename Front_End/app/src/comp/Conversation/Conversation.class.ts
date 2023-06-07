@@ -3,7 +3,7 @@ import { Config } from "../DTO/Config.dto";
 
 // default chain is LLMCHain 
 export class Conversation {
-    public chain : BaseChain  ;
+    public chain : any  ;
     constructor(private config: Config){
             this.chain = this.set_chain();}
     /**
@@ -14,8 +14,8 @@ export class Conversation {
     set_chain() {
         console.log(this.config.prompt_template)
         switch (this.config.chain_type) {
-            
-            /*case "ConversationalRetrievalQAChain":
+            /*
+            case "ConversationalRetrievalQAChain":
                 //initializedChain = new ConversationalRetrievalQAChain({prompt:static_prompt,memory:config.memory});
                 
                 return new ConversationalRetrievalQAChain()
@@ -38,18 +38,20 @@ export class Conversation {
             case "StuffDocumentsChain":
                 return new StuffDocumentsChain();
                 break;
-                */
+                
                 case "ConversationChain":
                  const ConversationChain_prop : LLMChainInput ={
                         llm: this.config.model ,
-                        prompt: this.config.prompt_template,}
+                        prompt: this.config.prompt_template,
+                    }
                     return new ConversationChain(ConversationChain_prop)
                 default:
                         const LLM_prop : LLMChainInput = {
                            llm: this.config.model ,
                            prompt: this.config.prompt_template,}
-                       return new LLMChain(LLM_prop);
+                       return new LLMChain(LLM_prop);*/
     }
+
     }
     async  call_chain(user_input: string){
         return await this.chain.call({input: user_input})
