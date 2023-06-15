@@ -1,11 +1,11 @@
-import React from 'react'
+
 
 type Props = {}
 
-function Chat_Info({}: Props) {
+function Chat_info({}: Props) {
   return (
-    <div>Chat_Info</div>
+    <div>Chat_info</div>
   )
 }
 
-export default Chat_Info
+export default Chat_info

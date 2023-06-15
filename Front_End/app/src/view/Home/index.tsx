@@ -4,7 +4,7 @@ import { get_api_key } from '../../util/get_api_key'
 import { useNavigate } from 'react-router-dom'
 import Control_Panel from '../../comp/Control_Panel'
 import { Container, Grid } from '@mui/material'
-import Chat_Info from '../../comp/Chat_info'
+import Chat_info from '../../comp/Chat_info'
 
 
 type Props = {}
@@ -25,7 +25,7 @@ function Home({ }: Props) {
           <PlayGround />
         </Grid>
         <Grid item xs={3}>
-          <Chat_Info />
+          <Chat_info />
         </Grid>
 
 
