@@ -19,5 +19,5 @@ export class doc_query_controller {
         })) file: Express.Multer.File)
         {
             console.log(file.originalname)
-            return this.doc_query_service.set_doc(file)}
+            return this.doc_query_service.process_file(file)}
 }

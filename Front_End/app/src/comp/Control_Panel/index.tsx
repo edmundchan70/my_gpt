@@ -31,20 +31,15 @@ function construct_model(temp:number, api_key:string , verbose:boolean,model_nam
 
 function Control_Panel({ }: Props) {
   const file_ref = useRef<HTMLInputElement|null>(null);
-   
-
- 
-    
   const TEMPLATE_PROMPT =`The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. Current conversation: {{chat_history}}, Human: {{input}}`
 
   return (
     <>
     
-    <Container fixed>
+    <Container >
                         <Paper elevation={3} className='p-5'>
                             <Container sx={{display:"flex",alignItems:"left" ,flexDirection:"column"}} >
-                                 <b className=' p-3'>1. Character Name</b>
-                                 <TextField id="outlined-basic" label="Character Name" variant="outlined" />
+                                 <b className=' p-3'>Language Module: GPT3.5_turbo</b>
                             </Container>
                         </Paper>
                         <Paper elevation={3} className='p-3'>
@@ -56,8 +51,8 @@ function Control_Panel({ }: Props) {
                                <Button variant="contained">Create Character!</Button>
                             </Container>
                         </Paper>
-                </Container>
- 
+    </Container>
+    
     </>
   )
 }

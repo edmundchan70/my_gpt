@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.react-pdf__Page__canvas {
+     margin: 0 auto;
+     width: fit-content !important;
+     height: 100vh!important;
+ 
+ }
+.pdf_container{
+     height: 50vh !important; 
+     max-width: 30px !important;
+}
+.react-pdf__Page__textContent{
+     display: none;
+   }
+ 
