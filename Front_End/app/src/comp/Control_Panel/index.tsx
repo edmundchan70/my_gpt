@@ -1,7 +1,6 @@
 
 import React, { ChangeEvent, memo, useEffect, useRef, useState } from 'react'
-import PlayGround from '../Playground';
-import { Config } from '../DTO/Config.dto';
+ 
 import { OpenAI } from "langchain/llms/openai"
 import { BaseMemory, BufferMemory, ConversationSummaryMemory } from 'langchain/memory';
 import { BasePromptTemplate, PromptTemplate } from 'langchain/prompts';
@@ -9,7 +8,7 @@ import { BaseOutputParser } from 'langchain/dist/schema/output_parser';
 import { StructuredOutputParser } from 'langchain/output_parsers';
  
 import { BaseLanguageModel } from 'langchain/dist/base_language';
-import { Conversation } from '../Conversation/Conversation.class';
+ 
 import { Document } from 'langchain/dist/document';
 import { Button, Container, Paper, TextField } from '@mui/material';
  

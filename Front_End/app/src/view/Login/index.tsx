@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
 import React, { useRef } from 'react'
-import { handle_error } from '../../api/common/handleError';
+import { handle_error } from '../../api/error/handleError';
 import { AiOutlineSend } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 

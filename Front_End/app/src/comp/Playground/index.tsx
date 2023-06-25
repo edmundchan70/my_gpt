@@ -1,17 +1,18 @@
 import React, { useRef, useState } from 'react'
 import Message_container from './Message_container'
 
-import { Conversation } from '../Conversation/Conversation.class';
-
 import { Box, Container, Grid, Paper } from '@mui/material';
 import UploadImg from "./assets/Upload.png"
 import Display_Pdf from './Display_Pdf';
-import { upload_file } from '../../api/file/file';
+import { upload_file } from '../../api/file/upload_file';
+import { Text_Chunk } from '../DTO/text_chunk.dto';
+import Chat_info from '../Chat_info';
 type Props = {}
 
 function PlayGround({ }: Props) {
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [text_chunk, set_text_chunk] = useState<Text_Chunk[] | null>(null);
   const handleFileInputChange = async (event: any) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
@@ -24,11 +25,13 @@ function PlayGround({ }: Props) {
 
       reader.readAsArrayBuffer(selectedFile);
     }
-    console.log(selectedFile);
 
-    const resp = await setUploadFile(selectedFile);
-    console.log(resp);
-    upload_file(selectedFile);
+
+    setUploadFile(selectedFile);
+
+    const resp = await upload_file(selectedFile);
+    console.log(resp.data)
+    set_text_chunk(resp.data.split_chunk)
   };
   const triggerUpload = () => {
 
@@ -46,30 +49,48 @@ function PlayGround({ }: Props) {
     marginTop: "30vh",
     cursor: "pointer"
   }
-
+  console.log(text_chunk)
   return (
     <>
-      <Container sx={{ display: "flex" }}>
-        {uploadFile ?
-          <>
-            <Grid item xs={6}>
-              <Message_container />
+
+      {uploadFile ?
+        <>
+
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Container  sx={{display: 'flex'}}>
+                  <Message_container  text_chunk={text_chunk}/>
+               
+              </Container>
+              
             </Grid>
-            <Grid item xs={6}>
-              <Display_Pdf File={uploadFile} />
+            
+         
+           
+            <Grid item xs={4}>
+              <Chat_info />
             </Grid>
-          </>
+          </Grid>
+
+
+
+
+   
+
+
+    </>
 
           :
-          <Grid item xs>
-            <Box component={"img"} src={UploadImg} sx={box_style} onClick={triggerUpload}>
-            </Box>
-            <input id='upload' style={{ display: 'none' }} type='file' onChange={handleFileInputChange} />
+  <Grid item xs>
+    <Box component={"img"} src={UploadImg} sx={box_style} onClick={triggerUpload}>
+    </Box>
+    <input id='upload' style={{ display: 'none' }} type='file' onChange={handleFileInputChange} />
 
 
-          </Grid>}
+  </Grid>
+}
 
-      </Container>
+ 
 
 
 

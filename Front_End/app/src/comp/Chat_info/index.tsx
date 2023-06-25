@@ -1,10 +1,15 @@
+import { Container } from "@mui/material"
 
 
 type Props = {}
 
 function Chat_info({}: Props) {
   return (
-    <div>Chat_info</div>
+    <>
+      <Container>
+         hiwqew
+      </Container>
+    </>
   )
 }
 

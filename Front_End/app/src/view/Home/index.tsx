@@ -19,18 +19,14 @@ function Home({ }: Props) {
   }, [])*/
   return (
     <>
-      <Grid container spacing={2}>
-        
-        <Grid item xs={8}>
+ 
+      
           <PlayGround />
-        </Grid>
-        <Grid item xs={4}>
-          <Chat_info />
-        </Grid>
+    
+       
 
 
-      </Grid>
-
+ 
     </>
 
 

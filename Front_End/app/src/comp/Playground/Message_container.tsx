@@ -1,14 +1,17 @@
 
-import { Box, Container, Grid, Paper, TextField, Typography } from '@mui/material';
+import { Box, Container, Fab, Grid, Paper, TextField, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
+  
+import { Text_Chunk } from '../DTO/text_chunk.dto';
 import { Message } from '../DTO/Message.dto';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { chat } from '../../api/chat/chat';
+import { chat_body } from '../../api/DTO/chat.dto';
 
 type Props = {
-
+  text_chunk: Text_Chunk[] | null
 }
-function Message_container({ }: Props) {
+function Message_container({ text_chunk }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
   
   const [Dialog, setDialog] = useState<Message[]>([{
@@ -19,30 +22,40 @@ function Message_container({ }: Props) {
     role: 'human',
     msg: "HI! This is human"
   }]);
-  const handle_input_msg = () => {
-    if (!inputMessage.current?.value)
-      alert("PLEASE ENTER SOMETHING!")
-    const human_msg: Message = {
+  const handle_input_msg = async() => {
+    if (!inputMessage.current?.value) alert("PLEASE ENTER SOMETHING!")
+    const human_msg : Message= {
       role: "human",
       msg: inputMessage.current!.value
-    }
-    console.log(human_msg)
+    } 
     setDialog((prev) => [...prev, human_msg]);
+
     inputMessage.current!.value=""
+    const chat_body :chat_body = {
+        text_chunk: text_chunk!,
+        query: human_msg.msg
+    }
+    const resp  = await chat(chat_body);  
+    const AI_msg :Message ={
+      role:"ai",
+      msg: resp.data.msg
+    }
+    console.log(resp.data);
+    setDialog((prev) => [...prev, AI_msg]);
   }
   
-   
+ 
   
   return (
     <>
-      <Paper elevation={3}>
-        <Box sx={{ display: "flex-inline" , }}>
-
+       
+       
+        <Paper elevation={1} sx={{width:'60%'}} >
           <Typography variant="h6" color="inherit" component="div">
             PDF_CHAT
           </Typography>
           <Box sx={{ height: "80vh" , overflow:"auto"}}>
-            {Dialog.map((item, i) => {
+            {Dialog.map((item :any) => {
               return (
 
                 <Container   sx={item.role === "ai" ? {justifyContent:"flex-end", textAlign: "left" ,padding:"1rem"} : {  width:"fit-content",marginRight:"10px",padding:"1rem"} }>
@@ -54,17 +67,23 @@ function Message_container({ }: Props) {
 
             })}
           </Box>
-          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }} >
+          <Grid container sx={{ display: "flex", width: "100%", alignItems: "center" ,padding:"1rem"}} >
               
-            
+            <Grid item xs={11}>
             <TextField id="outlined-basic" inputRef={inputMessage} label="Your Message" variant="outlined" fullWidth />
+            </Grid>
+ 
+            <Grid item xs={1}>
+            <Fab color="primary" onClick={handle_input_msg} aria-label="add"><SendIcon /></Fab>
+            </Grid>
            
-          </Box>
-        </Box>
+          </Grid>
+          </Paper>
+ 
 
 
 
-      </Paper>
+     
     </>
   )
 }
