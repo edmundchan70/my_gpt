@@ -7,28 +7,38 @@ import "@tensorflow/tfjs-backend-cpu";
 import { TensorFlowEmbeddings } from "langchain/embeddings/tensorflow";
 import "@tensorflow/tfjs-backend-cpu";
 import { doc } from 'prettier';
+import { text_chunk } from './DTO/text_chunk.dto';
+import HNSWLib_search from './util/HNSWLib';
+import { query } from 'express';
+import { optimzie_text_chunk } from './util/optimize_text_chunk.js';
 
 @Injectable()
 export class doc_query_service {
-    async   process_file(file: Express.Multer.File) {
+    async file_to_text_chunk(file: Express.Multer.File)  {
         const loader = new PDFLoader( new Blob([file.buffer], { type: 'application/pdf' }),{
             splitPages: false,
         });
         const docs = await loader.load();
+        return  optimzie_text_chunk(file.buffer);
         const splitter = new CharacterTextSplitter({
-            separator: " ",
-            chunkSize: 30,
-            chunkOverlap: 5,
+            separator: ".",
+            chunkSize: 300,
+            chunkOverlap:50
+            
           });
-          
         const output = await splitter.splitDocuments(docs);
-      
-        const vectorStore = await HNSWLib.fromDocuments(docs, new TensorFlowEmbeddings());
-        const result =await vectorStore.similaritySearch('skill',1);
-        console.log(result);
-        const new_text = result[0].pageContent.replace(/[\r\n]+/g, ' ');
-        return new_text
-      
+        return output
       }
-    
+    async chat(text_chunk_array: text_chunk[],query:string ,API_KEY){
+        const startTime = Date.now(); // Start timer  
+        const related_chunk = await HNSWLib_search(text_chunk_array,query);
+        const endTime = Date.now(); // End timer
+        return {
+          msg : related_chunk,
+          total_time:   endTime -startTime
+        }
+    }
 }
+
+
+ 

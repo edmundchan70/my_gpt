@@ -4,6 +4,7 @@
   "description": "",
   "author": "",
   "private": true,
+ 
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
@@ -33,6 +34,7 @@
     "langchain": "^0.0.92",
     "passport-local": "^1.0.0",
     "pdf-parse": "^1.1.1",
+    "pdf2json": "^3.0.4",
     "pdfjs-dist": "^3.7.107",
     "pdfreader": "^3.0.0",
     "reflect-metadata": "^0.1.13",
