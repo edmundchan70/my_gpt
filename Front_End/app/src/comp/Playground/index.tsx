@@ -60,7 +60,7 @@ function PlayGround({ }: Props) {
             <Grid item xs={8}>
               <Container  sx={{display: 'flex'}}>
                   <Message_container  text_chunk={text_chunk}/>
-               
+
               </Container>
               
             </Grid>
@@ -68,7 +68,7 @@ function PlayGround({ }: Props) {
          
            
             <Grid item xs={4}>
-              <Chat_info />
+              <Chat_info text_chunk={text_chunk}/>
             </Grid>
           </Grid>
 

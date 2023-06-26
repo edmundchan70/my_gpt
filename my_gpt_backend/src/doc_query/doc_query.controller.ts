@@ -32,5 +32,13 @@ export class doc_query_controller {
         const API_KEY :string  = process.env.OPENAI_API_KEY_TEST
         return this.doc_query_service.chat(text_chunk,query,API_KEY);
     }
-
+    @Post('similarity_search')
+    similarity_search(@Body() Body: chat_body){
+        const {text_chunk,query ,chunk_return} = Body  
+        return this.doc_query_service.similarity_search(text_chunk,query,chunk_return);
+    }
+    @Post('/save_embedding')
+    save_embedding(@Body()Body :any){
+        return this.doc_query_service.save_embedding();
+    }
         }
