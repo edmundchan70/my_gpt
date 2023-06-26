@@ -1,19 +1,23 @@
 
 import { Box, Container, Fab, Grid, Paper, TextField, Typography } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
   
-import { Text_Chunk } from '../DTO/text_chunk.dto';
+ 
 import { Message } from '../DTO/Message.dto';
 import { chat } from '../../api/chat/chat';
 import { chat_body } from '../../api/DTO/chat.dto';
+import { Text_Chunk } from '../DTO/Text_Chunk';
+import { Doc_config } from '.';
+ 
 
 type Props = {
   text_chunk: Text_Chunk[] | null
 }
 function Message_container({ text_chunk }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
-  
+  const chat_config  = useContext(Doc_config)
+  console.log(chat_config)
   const [Dialog, setDialog] = useState<Message[]>([{
     role: 'ai', 
     msg: "HI! This is AI"

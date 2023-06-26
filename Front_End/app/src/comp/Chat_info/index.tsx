@@ -1,20 +1,27 @@
 import { Container, Grid, Slide, Slider, Stack, InputLabel, TextField, Divider, Box, filledInputClasses, Button, Collapse } from "@mui/material"
 import ReactJson from 'react-json-view'
-import { Text_Chunk } from "../DTO/text_chunk.dto"
-import { useState } from "react"
+ 
+import { useContext, useState } from "react"
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { Text_Chunk } from "../DTO/Text_Chunk";
+import { Doc_config } from "../Playground";
+import { Chat_config } from "../DTO/Chat_config";
 type Props = {
-  text_chunk: Text_Chunk[] | null
+  text_chunk: Text_Chunk[] | null,
+  File : File 
 }
-function Chat_info({ text_chunk }: Props) {
+function Chat_info({ text_chunk,File }: Props) {
   const default_grid_item_sx = [{ textAlign: "center", display: 'felx', flexDirection: "column" }]
   const [show_text_chunk, set_show_text_chunk] = useState<boolean>(false);
   const [show_system, set_show_system] = useState<boolean>(false);
   const [show_sim_search, set_show_sim_search] = useState<boolean>(false);
+  
+  const chat_config  = useContext(Doc_config);
   return (
     <>
       <Grid container spacing={2} sx={{ display: "flex", flexDirection: "column", overflow: "auto" }}>
+        <Divider />
         <Grid item className="system_setting" sx={{ cursor: "pointer", padding: "1rem" }}>
           <Container onClick={() => set_show_system(!show_system)}>
             System setting {show_system ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
@@ -23,8 +30,6 @@ function Chat_info({ text_chunk }: Props) {
             <Grid item sx={default_grid_item_sx}>
               <InputLabel>Model: GPT-3.5-turbo</InputLabel>
             </Grid>
-
-
             <Grid item sx={default_grid_item_sx}  >
               Temperature
               <Divider />
@@ -58,32 +63,37 @@ function Chat_info({ text_chunk }: Props) {
             </Grid>
           </Collapse>
         </Grid>
-
+        <Divider />
         <Grid item className="text_chunk_setting" sx={{ cursor: "pointer" }} >
           <Container onClick={() => set_show_text_chunk(!show_text_chunk)}>
             Text Chunk Setting  {show_text_chunk ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
           </Container>
-
-
-
-
           <Collapse in={show_text_chunk}>
             <Grid item sx={default_grid_item_sx}>
               Text Chunk Setting
               <Box sx={{ padding: '1rem', gap: "1rem", display: "flex", flexDirection: "column" }} >
                 <TextField
-                  type="text"
-                  id="outlined-basic"
+                  type="number"
+                  id="outlined-number"
                   label="Chunk size(Token)"
-                  variant="standard">
-
+                  variant="standard" onChange={e=>{
+                        chat_config.set_chat_config((prev : Chat_config)=>({
+                          ...prev,  chunkSize:e.target.value
+                        }))
+                  }}>
+                    
                 </TextField>
 
                 <TextField
-                  type="text"
-                  id="outlined-basic"
-                  label="Chunk Overlap(Token)"
-                  variant="standard"
+                      type="number"
+                      id="outlined-number"
+                      label="Chunk Overlap(Token)"
+                      variant="standard"
+                      onChange={e=>{
+                        chat_config.set_chat_config((prev : Chat_config)=>({
+                          ...prev,  chunkOverlap:e.target.value
+                        }))
+                  }}
                 ></TextField>
                 <Container sx={{ display: "flex", justifyContent: "right" }}>
                   <Button variant="contained" sx={{ width: "30%" }}>APPLY CHANGE!</Button>
@@ -103,7 +113,7 @@ function Chat_info({ text_chunk }: Props) {
           </Collapse>
 
         </Grid>
-
+        <Divider />
 
 
         <Grid item className="similarity_search"  >
@@ -157,6 +167,7 @@ function Chat_info({ text_chunk }: Props) {
           </Collapse>
 
         </Grid>
+        <Divider />
 
 
 
