@@ -1,32 +1,10 @@
 
 import React, { ChangeEvent, memo, useEffect, useRef, useState } from 'react'
- 
-import { OpenAI } from "langchain/llms/openai"
-import { BaseMemory, BufferMemory, ConversationSummaryMemory } from 'langchain/memory';
-import { BasePromptTemplate, PromptTemplate } from 'langchain/prompts';
-import { BaseOutputParser } from 'langchain/dist/schema/output_parser';
-import { StructuredOutputParser } from 'langchain/output_parsers';
- 
-import { BaseLanguageModel } from 'langchain/dist/base_language';
- 
-import { Document } from 'langchain/dist/document';
+  
 import { Button, Container, Paper, TextField } from '@mui/material';
  
 type Props = {}
-function construct_prompt(raw_prompt:string,parser : string) : PromptTemplate{
-  return  new PromptTemplate({template:raw_prompt,inputVariables:["input"],partialVariables:{format_instructions: parser}})
-}
-function construct_parser(raw_parser:string) :string{
-  // parser.getFormatInstructions()  is the default output_parser
-  const parser = StructuredOutputParser.fromNamesAndDescriptions({
-    answer: "answer to the user's question",
-    source: "source used to answer the user's question, should be a website.",
-  });
-  return raw_parser===""?  parser.getFormatInstructions() : raw_parser
-}
-function construct_model(temp:number, api_key:string , verbose:boolean,model_name:string):BaseLanguageModel{
-  return  new OpenAI({temperature: temp , openAIApiKey: api_key,verbose:verbose,modelName:model_name})
-}
+ 
 
 function Control_Panel({ }: Props) {
   const file_ref = useRef<HTMLInputElement|null>(null);

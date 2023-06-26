@@ -1,7 +1,7 @@
 import { Controller, UseInterceptors, UploadedFile, Post, ParseFilePipe, FileTypeValidator, Body, Get   } from '@nestjs/common';
  import {FileInterceptor} from "@nestjs/platform-express"
 import { doc_query_service } from './doc_query.service';
-import { chat_body } from './DTO/chat_body.dto';
+import { chat_body } from '../DTO/doc_query/chat_body.dto';
  
 @Controller('doc_query')
 export class doc_query_controller {
@@ -27,8 +27,9 @@ export class doc_query_controller {
 }
 
     @Post('chat')
-    chat(@Body()Body :chat_body ,API_KEY :string  ="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" ){
+    chat(@Body()Body :chat_body  ){
         const {text_chunk,query} = Body    
+        const API_KEY :string  = process.env.OPENAI_API_KEY_TEST
         return this.doc_query_service.chat(text_chunk,query,API_KEY);
     }
 

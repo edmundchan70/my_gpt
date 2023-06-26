@@ -24,18 +24,21 @@ function Message_container({ text_chunk }: Props) {
   }]);
   const handle_input_msg = async() => {
     if (!inputMessage.current?.value) alert("PLEASE ENTER SOMETHING!")
+
+    //handle user input , update dialog
     const human_msg : Message= {
       role: "human",
       msg: inputMessage.current!.value
     } 
     setDialog((prev) => [...prev, human_msg]);
-
     inputMessage.current!.value=""
     const chat_body :chat_body = {
         text_chunk: text_chunk!,
         query: human_msg.msg
     }
+    //send user respond to openAI with corresponding data 
     const resp  = await chat(chat_body);  
+    console.log(resp)
     const AI_msg :Message ={
       role:"ai",
       msg: resp.data.msg

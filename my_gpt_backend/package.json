@@ -4,7 +4,6 @@
   "description": "",
   "author": "",
   "private": true,
- 
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
@@ -22,6 +21,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.4.2",
@@ -32,6 +32,7 @@
     "@tensorflow/tfjs-core": "^4.8.0",
     "hnswlib-node": "^1.4.2",
     "langchain": "^0.0.92",
+    "openai": "^3.3.0",
     "passport-local": "^1.0.0",
     "pdf-parse": "^1.1.1",
     "pdf2json": "^3.0.4",
