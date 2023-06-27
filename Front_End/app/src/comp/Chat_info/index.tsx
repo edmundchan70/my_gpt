@@ -7,17 +7,33 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Text_Chunk } from "../DTO/Text_Chunk";
 import { Doc_config } from "../Playground";
 import { Chat_config } from "../DTO/Chat_config";
+import { create_text_chunk } from "../../api/text_chunk";
 type Props = {
-  text_chunk: Text_Chunk[] | null,
-  File : File 
+ 
 }
-function Chat_info({ text_chunk,File }: Props) {
+function Chat_info({   }: Props) {
   const default_grid_item_sx = [{ textAlign: "center", display: 'felx', flexDirection: "column" }]
   const [show_text_chunk, set_show_text_chunk] = useState<boolean>(false);
   const [show_system, set_show_system] = useState<boolean>(false);
   const [show_sim_search, set_show_sim_search] = useState<boolean>(false);
-  
-  const chat_config  = useContext(Doc_config);
+  const {chat_config,set_chat_config}   = useContext(Doc_config);
+ 
+  const generate_text_chunk = async ()=>{
+    const {chunkSize , chunkOverlap,rawData}=  chat_config;
+    const create_text_chunk_DTO  : Chat_config= {
+      chunkSize: chunkSize,
+      chunkOverlap: chunkOverlap,
+      rawData: rawData
+    }
+    console.log('create_text_chunk_DTO', create_text_chunk_DTO);
+    const resp = await create_text_chunk(create_text_chunk_DTO);
+    console.log(resp.data)
+    set_chat_config((prev:Chat_config)=>({
+        ...prev, text_chunk: resp.data
+    }))
+ 
+  }
+ 
   return (
     <>
       <Grid container spacing={2} sx={{ display: "flex", flexDirection: "column", overflow: "auto" }}>
@@ -76,8 +92,9 @@ function Chat_info({ text_chunk,File }: Props) {
                   type="number"
                   id="outlined-number"
                   label="Chunk size(Token)"
-                  variant="standard" onChange={e=>{
-                        chat_config.set_chat_config((prev : Chat_config)=>({
+                  variant="standard" 
+                  onChange={e=>{
+                         set_chat_config((prev : Chat_config)=>({
                           ...prev,  chunkSize:e.target.value
                         }))
                   }}>
@@ -90,13 +107,13 @@ function Chat_info({ text_chunk,File }: Props) {
                       label="Chunk Overlap(Token)"
                       variant="standard"
                       onChange={e=>{
-                        chat_config.set_chat_config((prev : Chat_config)=>({
+                        set_chat_config((prev : Chat_config)=>({
                           ...prev,  chunkOverlap:e.target.value
                         }))
                   }}
                 ></TextField>
-                <Container sx={{ display: "flex", justifyContent: "right" }}>
-                  <Button variant="contained" sx={{ width: "30%" }}>APPLY CHANGE!</Button>
+                <Container  sx={{ display: "flex", justifyContent: "right" }}>
+                  <Button onClick={generate_text_chunk} variant="contained" sx={{ width: "30%" }}>APPLY CHANGE!</Button>
                 </Container>
 
               </Box>
@@ -105,7 +122,7 @@ function Chat_info({ text_chunk,File }: Props) {
             <Grid item sx={default_grid_item_sx}>
               Text Chunk Result
               <Box sx={{ height: "30vh", overflow: "auto", textAlign: 'left', border: 1, display: "flex", flexDirection: "column", gap: "50px", padding: "1rem" }} >
-                <ReactJson src={text_chunk!} collapsed />
+             {chat_config?   <ReactJson src={chat_config.text_chunk!} collapsed /> : <>LOADING</>}
               </Box>
             </Grid>
 
@@ -154,8 +171,7 @@ function Chat_info({ text_chunk,File }: Props) {
               <Box sx={{ height: "30vh", overflow: "auto", textAlign: 'left', border: 1, display: "flex", flexDirection: "column", gap: "50px", padding: "1rem" }} >
                 Similarity Search Result:
                 <Box sx={{display:'flex', flexDirection:'column'}}>
-                      <ReactJson src={text_chunk!} collapsed />
-
+                     
                 </Box>
 
             

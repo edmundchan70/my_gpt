@@ -9,14 +9,12 @@ import { chat } from '../../api/chat/chat';
 import { chat_body } from '../../api/DTO/chat.dto';
 import { Text_Chunk } from '../DTO/Text_Chunk';
 import { Doc_config } from '.';
+import { type } from 'os';
  
-
-type Props = {
-  text_chunk: Text_Chunk[] | null
-}
-function Message_container({ text_chunk }: Props) {
+type Props ={}
+function Message_container({  }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
-  const chat_config  = useContext(Doc_config)
+  const {chat_config,set_chat_config}  = useContext(Doc_config)
   console.log(chat_config)
   const [Dialog, setDialog] = useState<Message[]>([{
     role: 'ai', 
@@ -37,7 +35,7 @@ function Message_container({ text_chunk }: Props) {
     setDialog((prev) => [...prev, human_msg]);
     inputMessage.current!.value=""
     const chat_body :chat_body = {
-        text_chunk: text_chunk!,
+        text_chunk: chat_config.text_chunk!,
         query: human_msg.msg
     }
     //send user respond to openAI with corresponding data 

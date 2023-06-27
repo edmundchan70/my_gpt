@@ -6,7 +6,7 @@ import { CharacterTextSplitter } from "langchain/text_splitter";
  
  
 import { text_chunk } from '../DTO/doc_query/text_chunk.dto';
-import HNSWLib_search from './util/HNSWLib';
+import HNSWLib_search, { text_chunktoString } from './util/HNSWLib';
 import { openAiService } from 'src/openAI/openAi.service';
 import { pineconeService } from 'src/pinecone/pinecone.service';
 
@@ -34,8 +34,10 @@ export class doc_query_service {
           const {metadata,...newItem} = item ;
           return newItem
         })
+        const rawData = text_chunktoString(split_text)
         return {
           split_chunk : output, 
+          rawData: rawData,
           relevent_data: {
             chunkSize: chunkSize,
             chunkOverlap: chunkOverlap
@@ -70,7 +72,16 @@ export class doc_query_service {
       }
     }
 
-      
+    async generate_text_chunk(chunkOverlap:number ,chunkSize:number ,rawData :string){
+      console.log(rawData)
+      const splitter = new CharacterTextSplitter({
+        separator:".",
+        chunkOverlap:chunkOverlap,
+        chunkSize:chunkSize
+      })
+
+      return await splitter.createDocuments([rawData])
+    }
     async save_embedding(){
         const fileName = 'docname';
         return this.pineConeService.create_index(fileName);

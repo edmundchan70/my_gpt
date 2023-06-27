@@ -2,6 +2,7 @@ import { Controller, UseInterceptors, UploadedFile, Post, ParseFilePipe, FileTyp
  import {FileInterceptor} from "@nestjs/platform-express"
 import { doc_query_service } from './doc_query.service';
 import { chat_body } from '../DTO/doc_query/chat_body.dto';
+import { config_text_chunk } from 'src/DTO/doc_query/config_text_chunk.dto';
  
 @Controller('doc_query')
 export class doc_query_controller {
@@ -25,7 +26,13 @@ export class doc_query_controller {
             console.log(file.originalname)
     return this.doc_query_service.file_to_text_chunk(file)
 }
+    @Post('generate_text_chunk')
+    generate_text_chunk(@Body() Body:config_text_chunk){
+        const {chunkOverlap,chunkSize,rawData} =Body;
+        console.log(Body)
+        return this.doc_query_service.generate_text_chunk(chunkOverlap,chunkSize,rawData)
 
+    }
     @Post('chat')
     chat(@Body()Body :chat_body  ){
         const {text_chunk,query} = Body    
