@@ -29,7 +29,7 @@ export class doc_query_controller {
     @Post('generate_text_chunk')
     generate_text_chunk(@Body() Body:config_text_chunk){
         const {chunkOverlap,chunkSize,rawData} =Body;
-        console.log(Body)
+        console.log(Body);
         return this.doc_query_service.generate_text_chunk(chunkOverlap,chunkSize,rawData)
 
     }

@@ -8,6 +8,7 @@ import { Text_Chunk } from "../DTO/Text_Chunk";
 import { Doc_config } from "../Playground";
 import { Chat_config } from "../DTO/Chat_config";
 import { create_text_chunk } from "../../api/text_chunk";
+import { chunk_setting } from "../../api/DTO/chunk_setting.dto";
 type Props = {
  
 }
@@ -20,7 +21,7 @@ function Chat_info({   }: Props) {
  
   const generate_text_chunk = async ()=>{
     const {chunkSize , chunkOverlap,rawData}=  chat_config;
-    const create_text_chunk_DTO  : Chat_config= {
+    const create_text_chunk_DTO  : chunk_setting= {
       chunkSize: chunkSize,
       chunkOverlap: chunkOverlap,
       rawData: rawData
@@ -59,6 +60,7 @@ function Chat_info({   }: Props) {
                   max={1}
                   step={0.1}
                   aria-label="Volume"
+                  onChange={(e:any)=>set_chat_config((prev:Chat_config)=>({...prev,temperature:e.target.value}))}
                   valueLabelDisplay="auto">
                 </Slider>
                 <InputLabel>More Creative</InputLabel>
@@ -74,6 +76,9 @@ function Chat_info({   }: Props) {
                 multiline
                 fullWidth
                 rows={5}
+                onChange={e=>set_chat_config((prev:Chat_config)=>({
+                  ...prev, system_msg: e.target.value
+                }) )}
                 maxRows={5}
               />
             </Grid>

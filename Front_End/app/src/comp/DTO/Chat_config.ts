@@ -5,5 +5,7 @@ export interface Chat_config{
     chunkSize: number, 
     chunkOverlap: number, 
     rawData:string,
-    text_chunk?:Text_Chunk[]
+    text_chunk?:Text_Chunk[],
+    temperature : number,
+    system_msg: string
 }

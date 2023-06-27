@@ -19,9 +19,7 @@ function PlayGround({ }: Props) {
   const [chat_config,set_chat_config] = useState<Chat_config | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
 
-  useEffect(()=>{
-
-  })
+    
   const handleFileInputChange = async (event: any) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
@@ -41,7 +39,9 @@ function PlayGround({ }: Props) {
         chunkSize: relevent_data.chunkSize,
         chunkOverlap:relevent_data.chunkOVerlap,
         rawData:rawData,
-        text_chunk: split_chunk
+        text_chunk: split_chunk,
+        temperature :0.6,
+        system_msg: "Remeber the following data and use them to answer user question: "
     }
     set_chat_config(init_chat_config);
     };  

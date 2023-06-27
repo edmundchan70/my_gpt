@@ -23,12 +23,11 @@ export class openAiService {
         {
             role: "user",
             content: query
-        }]  
-        console.log("message: " ,messag_dto );
+        }];
         const resp =  await this.openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages:messag_dto,
-            temperature:0.8
+            temperature:0.6
         });
         return resp.data;
     }
