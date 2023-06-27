@@ -41,7 +41,8 @@ export class doc_query_controller {
     }
     @Post('similarity_search')
     similarity_search(@Body() Body: chat_body){
-        const {text_chunk,query ,chunk_return} = Body  
+        const {text_chunk,query,chunk_return } = Body   //chunk_return == k
+     
         return this.doc_query_service.similarity_search(text_chunk,query,chunk_return);
     }
     @Post('/save_embedding')

@@ -3,8 +3,8 @@ import { text_chunk } from "../../DTO/doc_query/text_chunk.dto";
 import { TensorFlowEmbeddings } from "langchain/embeddings/tensorflow";
 import * as tf from '@tensorflow/tfjs-node'
  
-async function HNSWLib_search(text_chunk: text_chunk [], query:string ,chunk_return?:number ) {
-  if(!chunk_return)  chunk_return = text_chunk.length /2 ;  //init chunk return
+async function HNSWLib_search(text_chunk: text_chunk [], query:string ,k?:number ) {
+  if(!k)  k = text_chunk.length /2 ;  //init chunk return
   // Set the backend to WASM and wait for the module to be ready.
   tf.setBackend('cpu');
  
@@ -13,11 +13,14 @@ async function HNSWLib_search(text_chunk: text_chunk [], query:string ,chunk_ret
     const vectorStore = await HNSWLib.fromDocuments(text_chunk, new TensorFlowEmbeddings({}));
     const End_time =  Date.now()
     console.log(vectorStore)
-    await vectorStore.save('./save.txt')
+   
     
-    console.log('spend' , End_time - start_time)
-    const result =await vectorStore.similaritySearch(query,chunk_return);
-    return  text_chunktoString(result);
+   // console.log('spend' , End_time - start_time)
+  //  console.log('chunk_return' , typeof k ,k , 'query' , query , 'text_chunk', text_chunk)
+    const result =await vectorStore.similaritySearch(query,Number(k));
+    console.log(result)
+    return {str_rep: text_chunktoString(result),
+            text_chunk: result};
  
    
   

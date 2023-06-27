@@ -47,28 +47,29 @@ export class doc_query_service {
     async chat(text_chunk_array: text_chunk[],query:string ,API_KEY){
         const HNSWLib_startTime = Date.now(); // Start timer  
         const related_chunk = await HNSWLib_search(text_chunk_array,query);
-        
+        const {str_rep} = related_chunk;
         const HNSWLib_endTime = Date.now(); // End timer
         
         const query_start = Date.now(); 
-        const resp = await this.openAiService.chat(query,related_chunk,API_KEY);
+        const resp = await this.openAiService.chat(query,str_rep,API_KEY);
         const query_End = Date.now(); 
         const {content} = resp.choices[0].message
         console.log(resp.choices)
         return {
           msg : content,
-          vectorStore_search:   HNSWLib_endTime -HNSWLib_startTime,
-          query_time: query_End-query_start,
-          total_time: query_End - HNSWLib_startTime
+          vectorStore_search:   HNSWLib_endTime -HNSWLib_startTime /1000,
+          query_time: query_End-query_start /1000,
+          total_time: query_End - HNSWLib_startTime /1000
         }
     }
-    async similarity_search(text_chunk_array,query,chunk_return){
+    async similarity_search(text_chunk_array:text_chunk[],query:string,k?:number){
       const HNSWLib_startTime = Date.now(); // Start timer  
-      const related_chunk = await HNSWLib_search(text_chunk_array,query,chunk_return);
+      const {str_rep,text_chunk} = await HNSWLib_search(text_chunk_array,query,k);
       const HNSWLib_endTime = Date.now(); // End timer
       return {
-        msg: related_chunk,
-        vectorStore_search:   HNSWLib_endTime - HNSWLib_startTime
+        msg: str_rep,
+        text_chunk: text_chunk,
+        vectorStore_search:  ( HNSWLib_endTime - HNSWLib_startTime) /1000
       }
     }
 

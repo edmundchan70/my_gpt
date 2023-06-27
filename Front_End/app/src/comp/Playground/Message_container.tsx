@@ -6,7 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
  
 import { Message } from '../DTO/Message.dto';
 import { chat } from '../../api/chat/chat';
-import { chat_body } from '../../api/DTO/chat.dto';
+import { chat_body } from '../../api/DTO/chat_body.dto';
 import { Text_Chunk } from '../DTO/Text_Chunk';
 import { Doc_config } from '.';
 import { type } from 'os';
