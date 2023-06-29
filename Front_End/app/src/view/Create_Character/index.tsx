@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { Button, Container, Paper, TextField, ThemeProvider } from "@mui/material"
-import { darkTheme } from '../../util/mui_config/theme'
+
 type Props = {}
 
 function Create_Character({ }: Props) {

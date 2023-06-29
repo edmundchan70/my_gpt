@@ -1,15 +1,16 @@
 import React, { useRef, useState,createContext, Context, useEffect } from 'react'
 import Message_container from './Message_container'
-
+import CardHeader from '@mui/material/CardHeader';
 import { Box, Button, Container, Divider, Grid, Paper } from '@mui/material';
 import UploadImg from "./assets/Upload.png"
  
 import { upload_file } from '../../api/file/upload_file';
 
-import Chat_info from '../Chat_info';
+ 
  
  
 import { Chat_config } from '../DTO/Chat_config';
+import Display_Pdf from './Display_Pdf';
  
  
  
@@ -40,7 +41,8 @@ function PlayGround({ }: Props) {
         chunkOverlap:relevent_data.chunkOVerlap,
         rawData:rawData,
         text_chunk: split_chunk,
-        temperature :0.6,
+        temperature :0.8,
+        File: uploadFile!,
         system_msg: "Remeber the following data and use them to answer user question: "
     }
     set_chat_config(init_chat_config);
@@ -72,6 +74,7 @@ function PlayGround({ }: Props) {
    
               <Container  sx={{display: 'flex'}}>
                   <Message_container  />
+                  <Display_Pdf File={uploadFile!} />
               </Container>
             </Grid>
             
@@ -79,7 +82,7 @@ function PlayGround({ }: Props) {
            
             <Grid item xs={4}>
         
-              <Chat_info />
+          
             </Grid>
           </Grid>
 

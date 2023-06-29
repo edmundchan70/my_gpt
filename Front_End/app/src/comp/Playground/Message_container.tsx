@@ -1,5 +1,5 @@
 
-import { Box, Container, Fab, Grid, Paper, TextField, Typography } from '@mui/material';
+import { AppBar, Box, Container, Fab, Grid, Paper, TextField, Toolbar, Typography } from '@mui/material';
 import { useContext, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
   
@@ -10,12 +10,14 @@ import { chat_body } from '../../api/DTO/chat_body.dto';
 import { Text_Chunk } from '../DTO/Text_Chunk';
 import { Doc_config } from '.';
 import { type } from 'os';
+import App from '../../App';
+import { lightTheme } from '../../util/mui_config/theme';
  
 type Props ={}
 function Message_container({  }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
   const {chat_config,set_chat_config}  = useContext(Doc_config)
-  console.log(chat_config)
+  console.log('chat_config: ',chat_config)
   const [Dialog, setDialog] = useState<Message[]>([{
     role: 'ai', 
     msg: "HI! This is AI"
@@ -43,9 +45,11 @@ function Message_container({  }: Props) {
     console.log(resp)
     const AI_msg :Message ={
       role:"ai",
-      msg: resp.data.msg
+      msg: resp.data.msg.text
     }
     console.log(resp.data);
+ 
+    
     setDialog((prev) => [...prev, AI_msg]);
   }
   
@@ -56,15 +60,24 @@ function Message_container({  }: Props) {
        
        
         <Paper elevation={1} sx={{width:'60%'}} >
-          <Typography variant="h6" color="inherit" component="div">
-            PDF_CHAT
-          </Typography>
+        
+
+          
           <Box sx={{ height: "80vh" , overflow:"auto"}}>
+          
+            <Box sx={{width:"inherit",background:lightTheme.palette.primary.light}}  >
+                <Typography variant="h6" color="inherit" component="div">
+                    PDF_CHAT
+                  </Typography>
+            </Box>
+              
+      
             {Dialog.map((item :any) => {
               return (
 
-                <Container   sx={item.role === "ai" ? {justifyContent:"flex-end", textAlign: "left" ,padding:"1rem"} : {  width:"fit-content",marginRight:"10px",padding:"1rem"} }>
-                   {item.msg}
+                <Container  sx={item.role === "ai" ? { marginLeft:'10px', borderRadius:"1rem",textAlign: "left",width:"fit-content" ,padding:"0.25rem"} :
+                                                     {  borderRadius:"1rem",width:"fit-content",marginRight:"10px",padding:"0.25rem",backgroundColor:lightTheme.palette.primary.main} }>
+              {item.msg} 
 
                 
                 </Container>)

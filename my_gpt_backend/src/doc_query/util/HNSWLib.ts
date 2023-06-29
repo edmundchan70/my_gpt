@@ -10,10 +10,9 @@ async function HNSWLib_search(text_chunk: text_chunk [], query:string ,k?:number
  
     const start_time =  Date.now()
     
-    const vectorStore = await HNSWLib.fromDocuments(text_chunk, new TensorFlowEmbeddings({}));
+    const vectorStore = await HNSWLib.fromDocuments(text_chunk, new TensorFlowEmbeddings());
     const End_time =  Date.now()
     console.log(vectorStore)
-   
     
    // console.log('spend' , End_time - start_time)
   //  console.log('chunk_return' , typeof k ,k , 'query' , query , 'text_chunk', text_chunk)

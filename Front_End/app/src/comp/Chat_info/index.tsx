@@ -144,7 +144,7 @@ function Chat_info({ }: Props) {
 
             <Grid item sx={default_grid_item_sx}>
               Text Chunk Result
-              <Box sx={{ height: "30vh", overflow: "auto", textAlign: 'left', border: 1, display: "flex", flexDirection: "column", gap: "50px", padding: "1rem" }} >
+              <Box sx={{ height: "30vh", overflow: "auto", textAlign: 'left' , display: "flex", flexDirection: "column", gap: "50px", padding: "1rem" }} >
                 {chat_config ? <ReactJson src={chat_config.text_chunk!} collapsed /> : <>LOADING</>}
               </Box>
             </Grid>
@@ -167,7 +167,7 @@ function Chat_info({ }: Props) {
 
 
 
-              <Box sx={{ border: 1, padding: '1.5rem', gap: "1rem", display: "flex", flexDirection: "column", alignItems: 'left' }}>
+              <Box sx={{  padding: '1.5rem', gap: "1rem", display: "flex", flexDirection: "column", alignItems: 'left' }}>
                 Search Setting
                 <Container sx={{ display: 'flex', flexDirection: "column", gap: '1rem' }}>
                   <Box sx={{display:'flex' ,alignItems:'center',gap:'20px'}}>
@@ -214,7 +214,7 @@ function Chat_info({ }: Props) {
 
             <Grid item>
 
-              <Box sx={{ height: "30vh", overflow: "auto", textAlign: 'left', border: 1, display: "flex", flexDirection: "column", gap: "50px", padding: "1rem" }} >
+              <Box sx={{ height: "30vh", overflow: "auto", textAlign: 'left' , display: "flex", flexDirection: "column", gap: "50px", padding: "1rem" }} >
                 Similarity Search Result:
                 <Box  >
                       {chat_config? <ReactJson src={chat_config.similarity_result!} collapsed />: <>Loading</>}

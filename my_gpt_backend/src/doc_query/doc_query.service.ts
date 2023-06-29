@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
-import { CharacterTextSplitter } from "langchain/text_splitter";
+import { CharacterTextSplitter, RecursiveCharacterTextSplitter } from "langchain/text_splitter";
  
- 
- 
+import	{ RetrievalQAChain} from "langchain/chains"
  
 import { text_chunk } from '../DTO/doc_query/text_chunk.dto';
 import HNSWLib_search, { text_chunktoString } from './util/HNSWLib';
 import { openAiService } from 'src/openAI/openAi.service';
 import { pineconeService } from 'src/pinecone/pinecone.service';
+import { OpenAI } from "langchain/llms/openai";
+import { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { TensorFlowEmbeddings } from 'langchain/embeddings/tensorflow';
 
  
 @Injectable()
@@ -21,11 +23,12 @@ export class doc_query_service {
         const docs = await loader.load();
         const chunkSize = 222 ;
         const chunkOverlap = 50 ; 
-        const splitter = new CharacterTextSplitter({
+       /* const splitter = new CharacterTextSplitter({
             separator: ".",
             chunkSize:chunkSize,
             chunkOverlap:chunkOverlap,
-          });
+         }); */
+        const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 , chunkOverlap:300 });
         const split_text = await splitter.splitDocuments(docs);
         console.log(split_text.length)
         console.log("COMPLETED REQIESRT file_to_text_chunk")
@@ -49,7 +52,6 @@ export class doc_query_service {
         const related_chunk = await HNSWLib_search(text_chunk_array,query);
         const {str_rep} = related_chunk;
         const HNSWLib_endTime = Date.now(); // End timer
-        
         const query_start = Date.now(); 
         const resp = await this.openAiService.chat(query,str_rep,API_KEY);
         const query_End = Date.now(); 
@@ -62,6 +64,22 @@ export class doc_query_service {
           total_time: query_End - HNSWLib_startTime /1000
         }
     }
+    async chat_retrievalQAChain(text_chunk_array: text_chunk[] ,query:string){
+      console.log("chat_retrievalQAChain call activated")
+        const model  = new OpenAI({
+          openAIApiKey: process.env.OPENAI_API_KEY_TEST,
+          modelName:"gpt-3.5-turbo"
+        })
+        console.log('Vector store init')
+        const vectorStore = await HNSWLib.fromDocuments(text_chunk_array, new TensorFlowEmbeddings());
+         
+        const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
+        console.log("Querying llm call activated")
+        const res  = await chain.call({
+          query: query
+        });
+        return {msg:res}
+    }
     async similarity_search(text_chunk_array:text_chunk[],query:string,k?:number){
       const HNSWLib_startTime = Date.now(); // Start timer  
       const {str_rep,text_chunk} = await HNSWLib_search(text_chunk_array,query,k);
@@ -72,7 +90,7 @@ export class doc_query_service {
         vectorStore_search:  ( HNSWLib_endTime - HNSWLib_startTime) /1000
       }
     }
-
+    
     async generate_text_chunk(chunkOverlap:number ,chunkSize:number ,rawData :string){
       console.log(rawData)
       const splitter = new CharacterTextSplitter({

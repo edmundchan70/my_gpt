@@ -8,6 +8,7 @@ export interface Chat_config{
     text_chunk:Text_Chunk[],
     temperature : number,
     system_msg: string,
+    File : File ,
     k?: number,
     similarity_result?: Text_Chunk[]  //will be pure string after similarty search,
     similarity_query?: string 
