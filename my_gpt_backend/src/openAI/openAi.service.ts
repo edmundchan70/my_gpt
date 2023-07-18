@@ -25,9 +25,9 @@ export class openAiService {
             content: query
         }];
         const resp =  await this.openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4",
             messages:messag_dto,
-            temperature:0.6
+            temperature:0.8
         });
         return resp.data;
     }

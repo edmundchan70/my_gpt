@@ -80,6 +80,7 @@ export class doc_query_service {
         });
         return {msg:res}
     }
+ 
     async similarity_search(text_chunk_array:text_chunk[],query:string,k?:number){
       const HNSWLib_startTime = Date.now(); // Start timer  
       const {str_rep,text_chunk} = await HNSWLib_search(text_chunk_array,query,k);

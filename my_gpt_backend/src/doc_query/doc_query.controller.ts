@@ -12,7 +12,14 @@ export class doc_query_controller {
     check_doc_query(){
         console.log("doc_query running");
     }
-
+    @Post('chat')
+    chat(@Body()Body :chat_body  ){
+        const {text_chunk,query} = Body    
+        const API_KEY :string  = process.env.OPENAI_API_KEY_TEST
+        console.log(text_chunk)
+        return this.doc_query_service.chat_retrievalQAChain(text_chunk,query);
+    }
+  
     @Post('upload_pdf')
     @UseInterceptors(FileInterceptor('document'))
     handle_file(
@@ -26,6 +33,19 @@ export class doc_query_controller {
             console.log(file.originalname)
     return this.doc_query_service.file_to_text_chunk(file)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+    //no use 
     @Post('generate_text_chunk')
     generate_text_chunk(@Body() Body:config_text_chunk){
         const {chunkOverlap,chunkSize,rawData} =Body;
@@ -33,13 +53,8 @@ export class doc_query_controller {
         return this.doc_query_service.generate_text_chunk(chunkOverlap,chunkSize,rawData)
 
     }
-    @Post('chat')
-    chat(@Body()Body :chat_body  ){
-        const {text_chunk,query} = Body    
-        const API_KEY :string  = process.env.OPENAI_API_KEY_TEST
-        console.log(text_chunk)
-        return this.doc_query_service.chat_retrievalQAChain(text_chunk,query);
-    }
+   
+
     @Post('similarity_search')
     similarity_search(@Body() Body: chat_body){
         const {text_chunk,query,chunk_return } = Body   //chunk_return == k

@@ -19,8 +19,6 @@ export  const Doc_config = createContext< any>(null);
 function PlayGround({ }: Props) {
   const [chat_config,set_chat_config] = useState<Chat_config | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-
-    
   const handleFileInputChange = async (event: any) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
@@ -69,22 +67,19 @@ function PlayGround({ }: Props) {
       {uploadFile ?
         <>
             {console.log('cgat _congif',chat_config)}
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
    
-              <Container  sx={{display: 'flex'}}>
+    
+   
+              <Container  sx={{display: 'flex',justifyContent:"center",gap:"40px"}}>
                   <Message_container  />
                   <Display_Pdf File={uploadFile!} />
               </Container>
-            </Grid>
+ 
             
          
            
-            <Grid item xs={4}>
-        
           
-            </Grid>
-          </Grid>
+ 
 
 
 
