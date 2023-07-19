@@ -4,31 +4,36 @@
 .react-pdf__Page {
      margin: 0 auto;
  
-     height: 80vh!important;
+     
   
  }
  
  .react-pdf__Page__canvas{
-     
+
      height: 90vh!important;
      object-fit: cover !important;
- 
+     display: none !important;
  }
 .pdf_container{
      height: 50vh !important; 
      overflow: scroll;
-     width: max-content!important;
+ 
  
 }
+ 
 .react-pdf__Page__textContent{
-     height: 90vh!important;
+ 
      width: max-content !important;
-    
    
+   }
+   .annotationLayer{
+     display: none !important;
    }
  
    .react-pdf__Document{
      height: 90vh !important;
-     overflow: scroll;
-
+     padding: 1rem;
+     margin-top: 10px;
+     width: 75% !important;
+    overflow-y: scroll;
    }

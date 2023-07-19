@@ -6,6 +6,7 @@ import Control_Panel from '../../comp/Control_Panel'
 import { Container, Grid } from '@mui/material'
 import Chat_info from '../../comp/Chat_info'
 import { Document, Page } from 'react-pdf';
+import Header from '../../comp/Header'
 
 
 type Props = {}
@@ -21,7 +22,7 @@ function Home({ }: Props) {
   return (
     <>
  
-      
+         <Header />
           <PlayGround />
     
        

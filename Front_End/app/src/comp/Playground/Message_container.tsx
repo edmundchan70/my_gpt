@@ -57,6 +57,7 @@ function Message_container({  }: Props) {
     console.log(resp, 'sumarize');
     setDialog(() =>  [AI_msg]);
   }
+  
   useEffect(()=>{
     if(chat_config) summarize_documnet();
   },[chat_config])

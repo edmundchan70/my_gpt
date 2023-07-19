@@ -3,7 +3,7 @@ import Message_container from './Message_container'
 import CardHeader from '@mui/material/CardHeader';
 import { Box, Button, Container, Divider, Grid, Paper } from '@mui/material';
 import UploadImg from "./assets/Upload.png"
- 
+import Test_pdf from "./assets/CoverLEtter.pdf";
 import { upload_file } from '../../api/file/upload_file';
 
  
@@ -60,6 +60,7 @@ function PlayGround({ }: Props) {
     marginTop: "30vh",
     cursor: "pointer"
   }
+  //test code 
  
   return (
     <>
@@ -67,40 +68,24 @@ function PlayGround({ }: Props) {
       {uploadFile ?
         <>
             {console.log('cgat _congif',chat_config)}
-   
-    
-   
               <Container  sx={{display: 'flex',justifyContent:"center",gap:"40px"}}>
                   <Message_container  />
                   <Display_Pdf File={uploadFile!} />
               </Container>
- 
-            
-         
-           
-          
- 
-
-
-
-
-   
-
-
     </>
-
           :
-  <Grid item xs>
-    <Box component={"img"} src={UploadImg} sx={box_style} onClick={triggerUpload}>
-    </Box>
-    <input id='upload' style={{ display: 'none' }} type='file' onChange={handleFileInputChange} />
+      <Grid item xs>
+        <Box component={"img"} src={UploadImg} sx={box_style} onClick={triggerUpload}>
+        </Box>
+        <input id='upload' style={{ display: 'none' }} type='file' onChange={handleFileInputChange} />
 
 
-  </Grid>
+      </Grid>
 }
 
 
-</Doc_config.Provider>
+      
+      </Doc_config.Provider>
       </>
   )
 }
