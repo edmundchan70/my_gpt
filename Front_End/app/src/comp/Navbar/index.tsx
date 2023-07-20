@@ -10,18 +10,18 @@ import { upload_file } from '../../api/file/upload_file';
 type Props = {}
 export  const Doc_config = createContext< any>(null);
 function Navbar({}: Props) {
-  const AVATAR_SX : SxProps<Theme> ={
-    width:'100px',
-    height:'100px'
-  }
-  const ListItem_Sx :SxProps<Theme>={
-    justifyContent:'center',
-    textAlign:'center',
-    display:"flex",
-    flexDirection:"column"
-  }
+
   const [chat_config,set_chat_config] = useState<Chat_config | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [selectDoc, setselectDoc] = useState<number>(0);
+ // const [Document, setDocument] = useState<Document[]>([]);
+  const [Document, setDocument] = useState<Document[]>([
+    {DocId: 1 , DocTitle:" 1 " , DocType:"pdf"},
+    {DocId: 2 , DocTitle:" 2 " , DocType:"pdf"},
+ 
+    {DocId: 3 , DocTitle:" 3 " , DocType:"pdf"}
+  ]);
+  //function
   const handleFileInputChange = async (event: any) => {
     const selectedFile = event.target.files[0];
     console.log(selectedFile)
@@ -61,14 +61,21 @@ function Navbar({}: Props) {
     console.log(target_element)
     target_element?.click();
   }
-  const [selectDoc, setselectDoc] = useState<number>(0);
- // const [Document, setDocument] = useState<Document[]>([]);
-  const [Document, setDocument] = useState<Document[]>([
-    {DocId: 1 , DocTitle:" 1 " , DocType:"pdf"},
-    {DocId: 2 , DocTitle:" 2 " , DocType:"pdf"},
- 
-    {DocId: 3 , DocTitle:" 3 " , DocType:"pdf"}
-  ]);
+  const loadDocument = (DocId : number) => {
+    setselectDoc(DocId);
+    
+  }
+  //const
+  const AVATAR_SX : SxProps<Theme> ={
+    width:'100px',
+    height:'100px'
+  }
+  const ListItem_Sx :SxProps<Theme>={
+    justifyContent:'center',
+    textAlign:'center',
+    display:"flex",
+    flexDirection:"column"
+  }
   return (
     <>
      <Doc_config.Provider value={{chat_config ,set_chat_config}}>
@@ -107,11 +114,11 @@ function Navbar({}: Props) {
           </Button>
         { Document.map((item,i)=>{ 
           if(item.DocId === selectDoc)
-                return ( <Button  fullWidth onClick={()=>{ setselectDoc(item.DocId)}} sx={{backgroundColor:colors.blue[400]}}>
+                return ( <Button  fullWidth onClick={()=>{ loadDocument(item.DocId)}} sx={{backgroundColor:colors.blue[400]}}>
                     <ListDocument data={item}/>
                 </Button>)
           else
-          return ( <Button fullWidth onClick={()=>{ setselectDoc(item.DocId)}} sx={{'&:hover':{
+          return ( <Button fullWidth onClick={()=>{ loadDocument(item.DocId)}} sx={{'&:hover':{
             background:colors.blue[100]
           }}}>
           <ListDocument data={item}/>
