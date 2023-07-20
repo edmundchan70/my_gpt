@@ -9,7 +9,7 @@ import { upload_file } from '../../api/file/upload_file';
  
  
  
-import { Chat_config } from '../DTO/Chat_config';
+import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import Display_Pdf from './Display_Pdf';
  
  

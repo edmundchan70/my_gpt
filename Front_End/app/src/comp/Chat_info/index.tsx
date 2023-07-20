@@ -4,9 +4,9 @@ import ReactJson from 'react-json-view'
 import { useContext, useState } from "react"
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Text_Chunk } from "../DTO/Text_Chunk";
+import { Text_Chunk } from "../DTO/PlaygroundDto/Text_Chunk";
 import { Doc_config } from "../Playground";
-import { Chat_config } from "../DTO/Chat_config";
+import { Chat_config } from "../DTO/PlaygroundDto/Chat_config";
 import { create_text_chunk } from "../../api/text_chunk";
 import { chunk_setting } from "../../api/DTO/chunk_setting.dto";
 import similarity_search from "../../api/Similarity_Search/similarity_search";
