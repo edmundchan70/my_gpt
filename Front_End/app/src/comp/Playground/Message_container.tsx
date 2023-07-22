@@ -1,5 +1,5 @@
 
-import {  Avatar, Box, Container, Fab, Grid, Paper, TextField, Toolbar, Typography } from '@mui/material';
+import {  Avatar, Box, Container, Fab, Grid, Paper, SxProps, TextField, Toolbar, Typography } from '@mui/material';
 import { useContext, useEffect, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -7,14 +7,18 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Message } from '../DTO/PlaygroundDto/Message.dto';
 import { chat } from '../../api/chat/chat';
 import { chat_body } from '../../api/DTO/chat_body.dto';
+import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
+import { Theme } from '@emotion/react';
  
-import { Doc_config } from '.';
  
  
-type Props ={}
-function Message_container({  }: Props) {
+ 
+type Props ={
+  chat_config: Chat_config
+}
+function Message_container({ chat_config }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
-  const {chat_config,set_chat_config}  = useContext(Doc_config)
+ 
   console.log('chat_config: ',chat_config)
   const [Dialog, setDialog] = useState<Message[]|null>(null);
 
@@ -57,11 +61,28 @@ function Message_container({  }: Props) {
     console.log(resp, 'sumarize');
     setDialog(() =>  [AI_msg]);
   }
-  /*
+  const container_AI  :SxProps<Theme>  =  {
+ 
+    marginLeft:'10px', 
+    borderRadius:"1rem",
+    textAlign: "left",
+    width:"fit-content" ,
+    padding:"2rem",
+    display:"flex",
+    gap:"10px"
+  }
+  const container_human :SxProps<Theme> ={
+    maxHeight:"150px" ,
+    borderRadius:"1rem",
+    width:"fit-content",
+    marginRight:"10px",
+    padding:"2rem",
+    display:"flex",
+    gap:"10px"} 
   useEffect(()=>{
     if(chat_config) summarize_documnet();
   },[chat_config])
- */
+ 
   
   return (
     <>
@@ -77,13 +98,13 @@ function Message_container({  }: Props) {
             {Dialog&&Dialog.map((item :any) => {
               return (
 
-                <Container  sx={item.role === "ai" ? {maxHeight:"150px" ,marginLeft:'10px', borderRadius:"1rem",textAlign: "left",width:"fit-content" ,padding:"2rem",display:"flex",gap:"10px"}:
-                                                     {maxHeight:"150px" ,borderRadius:"1rem",width:"fit-content",marginRight:"10px",padding:"2rem",display:"flex",gap:"10px"} }>
+                <Container  sx={item.role === "ai" ? container_AI:
+                                                    container_human}>
               {item.role ==="ai"&& 
                     <Avatar sx={{margin:"auto"}}>
                     <SmartToyIcon />
                 </Avatar>}
-                <Container sx={{overflow:'scroll' ,display:"flex",backgroundColor:'white',borderRadius:"30px"}}>  
+                <Container sx={{overflow:'scroll' ,display:"flex",backgroundColor:'white',borderRadius:"30px",padding:'1rem'}}>  
               
             
                     <Typography > {item.msg}</Typography>

@@ -12,5 +12,6 @@ export interface Chat_config{
     k?: number,
     similarity_result?: Text_Chunk[]  //will be pure string after similarty search,
     similarity_query?: string 
-    similarity_Search_time?: number
+    similarity_Search_time?: number,
+
 }

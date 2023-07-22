@@ -15,9 +15,8 @@ function Login({ }: Props) {
     textAlign: "center",
 
   }
-  const emailRef = useRef<HTMLInputElement | null>(null);
-  const passwordRef = useRef<HTMLInputElement | null>(null);
-
+  
+ 
   return (
     <>
       <Grid container padding={0} >
@@ -39,7 +38,8 @@ function Login({ }: Props) {
             <Typography   component={'p'} sx={{ color:'white',  alignItems: 'center',fontSize:"20px"  ,padding:'3rem'}}>
            Sign Up   and start chatting with your documents!
             </Typography>
-            <Button variant="outlined"  sx={{backgroundColor:"white", }}>
+
+            <Button variant="outlined"  sx={{backgroundColor:"white" }}>
                 Sign Up
             </Button>
           </Box>

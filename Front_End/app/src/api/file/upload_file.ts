@@ -1,4 +1,6 @@
+ 
 import service from "../request/request";
+import { getAccessToken } from "../../util/getToken/getToken";
 
 export function upload_file(file: File){
     const formData = new FormData();
@@ -6,6 +8,9 @@ export function upload_file(file: File){
     return service({
         url: '/doc_query/upload_pdf',
         method: 'post',
-        data: formData
+        data: formData,
+        headers:{
+            Authorization: 'Bearer ' +getAccessToken()
+        }
     })
 }

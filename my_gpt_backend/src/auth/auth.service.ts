@@ -71,14 +71,14 @@ export class AuthService {
                 email:Body.email
             }
         })
-        if (!user) throw new ForbiddenException("ACCESS_DENIED");
+        if (!user) throw new ForbiddenException("USER NOT FOUND, Check your email");
         const passwordMatches = await bcrypt.compare(Body.password , user.hash);
-        if(!passwordMatches)  throw new ForbiddenException("WRONG_CREDENTIALS");
+        if(!passwordMatches)  throw new ForbiddenException("WRONG_CREDENTIALS. Check your email&password");
         
         //finish validating user
         const tokens = await this.getToken(user.id,user.email);
         await this.updateRtHash(user.id,tokens.refresh_token);
-        return tokens
+        return  tokens
     } 
     async logOut(userId:number){
         await this.prisma.user.updateMany({
