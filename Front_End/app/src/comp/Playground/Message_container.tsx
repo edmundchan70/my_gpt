@@ -107,7 +107,7 @@ function Message_container({ chat_config }: Props) {
                 <Container sx={{overflow:'scroll' ,display:"flex",backgroundColor:'white',borderRadius:"30px",padding:'1rem'}}>  
               
             
-                    <Typography > {item.msg}</Typography>
+                    <Typography sx={{fontSize:'14px'}}> {item.msg}</Typography>
                     
                 </Container>
                 {item.role !=="ai"&& 

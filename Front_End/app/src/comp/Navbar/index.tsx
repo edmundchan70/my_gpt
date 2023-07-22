@@ -76,9 +76,9 @@ function Navbar({ }: Props) {
   return (
     <>
  
-        <Grid container>
-          <Grid item xs={2}>
-            <Container sx={{ border: "1px solid black" }}>
+        <Grid container sx={{gap:'0px'}}>
+          <Grid item xs={2} >
+            <Container sx={{marginTop:'20px'}} >
               <input id='upload' style={{ display: 'none' }} type='file' onChange={handleFileInputChange} />
 
               <List>
@@ -130,6 +130,7 @@ function Navbar({ }: Props) {
               </List>
 
             </Container>
+      
           </Grid>
           <Grid item xs={10}>
           {chat_config&&  <PlayGround chat_config={chat_config!} />}

@@ -23,6 +23,15 @@ model document{
   doc_id String @id @default(uuid())
   owner_id Int
   user   User @relation(fields: [owner_id], references: [id] )
+  FileName String 
   content String
+  TextChunk TextChunk[]
+  @@unique([owner_id, FileName]) // Composite unique constraint
+}
+model TextChunk {
+  textChunk_id Int @id @default(autoincrement())
+  doc_id String 
+  doc document @relation(fields: [doc_id], references: [doc_id])
+  text_chunk String
 }
  

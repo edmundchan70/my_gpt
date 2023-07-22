@@ -1,8 +1,9 @@
-import { Controller, UseInterceptors, UploadedFile, Post, ParseFilePipe, FileTypeValidator, Body, Get   } from '@nestjs/common';
+import { Controller, UseInterceptors, UploadedFile, Post, ParseFilePipe, FileTypeValidator, Body, Get, Headers   } from '@nestjs/common';
  import {FileInterceptor} from "@nestjs/platform-express"
 import { doc_query_service } from './doc_query.service';
 import { chat_body } from '../DTO/doc_query/chat_body.dto';
 import { config_text_chunk } from 'src/DTO/doc_query/config_text_chunk.dto';
+import { Public } from 'src/common/decorators';
  
 @Controller('doc_query')
 export class doc_query_controller {
@@ -19,11 +20,13 @@ export class doc_query_controller {
         console.log(text_chunk)
         return this.doc_query_service.chat_retrievalQAChain(text_chunk,query);
     }
-  
+    @Public() //test purpose 
     @Post('upload_pdf')
     @UseInterceptors(FileInterceptor('document'))
+    
     handle_file(
-        @Body() Body :any, //change 
+        @Headers('Authorization') token: string,
+        @Body() Body :any, //change  
         @UploadedFile(
         new ParseFilePipe({
             validators:[
@@ -31,7 +34,9 @@ export class doc_query_controller {
         })) file: Express.Multer.File)
         {
             console.log(file.originalname)
-    return this.doc_query_service.file_to_text_chunk(file)
+
+    
+    return this.doc_query_service.file_to_text_chunk(file,token)
 }
 
 

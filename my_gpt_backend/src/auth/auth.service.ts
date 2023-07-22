@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './DTO';
 import *  as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
+import { jwtPayload } from './DTO/jwtPayload.dto';
  
 @Injectable()
 export class AuthService {
@@ -12,6 +13,12 @@ export class AuthService {
     hashData(data:string ){
         return bcrypt.hash(data,10);
     }
+    decodeToken(token:string){
+        console.log(          this.jwtService.decode(token))
+
+       // return decoded.email;
+    }
+    
     async signupLocal(Body : AuthDto){
         const hash = await this.hashData(Body.password);
         const newUser = await this.prisma.user.create({
