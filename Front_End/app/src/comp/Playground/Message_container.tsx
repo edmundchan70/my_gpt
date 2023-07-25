@@ -6,7 +6,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import { Message } from '../DTO/PlaygroundDto/Message.dto';
 import { chat } from '../../api/chat/chat';
-import { chat_body } from '../../api/DTO/chat_body.dto';
+import { chat_body } from '../../api/chat/DTO/chat_body.dto';
 import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import { Theme } from '@emotion/react';
  

@@ -1,4 +1,4 @@
-import { chat_body } from "../../../api/DTO/chat_body.dto";
+import { chat_body } from "../../../api/chat/DTO/chat_body.dto";
 import { Text_Chunk } from "./Text_Chunk";
 
 export interface Chat_config{

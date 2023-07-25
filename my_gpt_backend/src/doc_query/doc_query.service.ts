@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { CharacterTextSplitter, RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 import { RetrievalQAChain } from "langchain/chains"
-
+ 
 import { text_chunk } from '../DTO/doc_query/text_chunk.dto';
 import HNSWLib_search, { text_chunktoString } from './util/HNSWLib';
 import { openAiService } from 'src/openAI/openAi.service';
@@ -13,8 +13,12 @@ import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { TensorFlowEmbeddings } from 'langchain/embeddings/tensorflow';
 import { randomUUID } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
-import { jwtPayload } from 'src/auth/DTO/jwtPayload.dto';
+ 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { S3Service } from 'src/S3/S3.service';
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+ 
 
 
 @Injectable()
@@ -22,7 +26,8 @@ export class doc_query_service {
   constructor(private openAiService: openAiService,
      private pineConeService: pineconeService,
      private prisma: PrismaService,
-     private jwtService: JwtService 
+     private jwtService: JwtService ,
+     private S3 : S3Service
      ) { }
   
   async file_to_text_chunk(file: Express.Multer.File, token: string) {
@@ -48,11 +53,14 @@ export class doc_query_service {
     })
     const rawData = text_chunktoString(split_text);
     const doc_id = randomUUID()
+    console.log(file)
     const fileName = file.originalname
     const  decoded_info :any  = this.jwtService.decode(token.slice("Bearer ".length));
   
     console.log('decode info',decoded_info)
     const {id} = await this.get_userId_by_email(decoded_info.email)
+    //doc_id will also be S3 fileName
+    try{
     await this.prisma.document.create({
       data:{
         doc_id:doc_id,
@@ -60,8 +68,24 @@ export class doc_query_service {
         owner_id:id,
         content:rawData,
       }
-    })
+    })}catch(err:any){
+      throw new ForbiddenException("FILE NAME MUST BE UNIQUE ")
+    }
+    //Init S3 command and save the file 
+    const command =    new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: doc_id,
+        Body: file.buffer
+      });
+      try {
+        const response = await this.S3.send(command);
+        console.log(response);
+      } catch (err) {
+          throw err
+      }
+    console.log('save to S3 success')
     console.log(id)
+    
     return {
       split_chunk: output,
       rawData: rawData,
@@ -88,32 +112,12 @@ export class doc_query_service {
     });
     return { msg: res }
   }
-
-  async similarity_search(text_chunk_array: text_chunk[], query: string, k?: number) {
-    const HNSWLib_startTime = Date.now(); // Start timer  
-    const { str_rep, text_chunk } = await HNSWLib_search(text_chunk_array, query, k);
-    const HNSWLib_endTime = Date.now(); // End timer
-    return {
-      msg: str_rep,
-      text_chunk: text_chunk,
-      vectorStore_search: (HNSWLib_endTime - HNSWLib_startTime) / 1000
-    }
+  async get_user_document(token: string){
+    
   }
 
-  async generate_text_chunk(chunkOverlap: number, chunkSize: number, rawData: string) {
-    console.log(rawData)
-    const splitter = new CharacterTextSplitter({
-      separator: ".",
-      chunkOverlap: chunkOverlap,
-      chunkSize: chunkSize
-    })
-
-    return await splitter.createDocuments([rawData])
-  }
-  async save_embedding() {
-    const fileName = 'docname';
-    return this.pineConeService.create_index(fileName);
-  }
+  
+  //helper functions 
   async get_userId_by_email(email: string) {
   return  this.prisma.user.findUnique({
       where:{
@@ -124,6 +128,32 @@ export class doc_query_service {
       }
     })
   }
+  async put_file_to_S3(fileName:string) {
+
+  }
+  async get_file_from_S3(fileName: string ){
+    const command  = new GetObjectCommand({
+      Bucket:process.env.S3_BUCKET_NAME,
+      Key:fileName
+    })
+    //console.log(command)
+    try{
+     const {Body} = await  this.S3.send(command);
+     const blob  =await Body.transformToWebStream();
+     console.log('byte: ',blob)
+     return blob;
+    }
+     catch(err){
+      console.log( err.Code)
+        return err.Code
+     }
+     
+ 
+     
+      
+    
+  }
+  
 }
 
 
