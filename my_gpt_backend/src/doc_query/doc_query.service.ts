@@ -14,9 +14,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/S3/S3.service';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
  
-import { text_chunk_to_DB, text_chunktoString } from './util/HNSWLib';
+import { DB_to_text_chunk, text_chunk_to_DB, text_chunktoString } from './util/HNSWLib';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { user_info } from './DTO/user_info.dto';
+import { conversation } from './DTO/conversation.dto';
  
 
 
@@ -71,18 +72,8 @@ export class doc_query_service {
       throw new ForbiddenException("FILE NAME MUST BE UNIQUE ")
     }
     //Init S3 command and save the file 
-    const command =    new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: doc_id,
-        Body: file.buffer
-      });
-      try {
-        const response = await this.S3.send(command);
-        console.log(response);
-      } catch (err) {
-          throw err
-      }
-    console.log('save to S3 success')
+    await this.put_file_to_S3(doc_id,file);
+    
     console.log(id)
     //save text chunk to db
     const text_chunk_db = text_chunk_to_DB(split_text,doc_id,id)
@@ -111,10 +102,15 @@ export class doc_query_service {
 
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
     console.log("Querying llm call activated")
-    const res = await chain.call({
+    const {text} = await chain.call({
       query: query
     });
-    return { msg: res }
+    //save to db 
+    const HUMAN_MESSAGE : conversation={
+
+    }
+
+    return { msg: text }
   }
   async get_user_document_list(token: string){
    const decode_info :user_info = await this.decode_user_from_token(token);
@@ -132,11 +128,31 @@ export class doc_query_service {
     })
 
   }
-  async get_document_detail(token:string)  {
+  async get_document_detail(token:string,doc_id:string)  {
+    /**
+     * 1. Take the conversation infomraiton
+     * 2. Get the pdf document from S3
+     * 
+     */
+
     
   }
   
   //helper functions 
+  async retreive_text_chunk(doc_id:string,user_id : number){
+    const text_chunk = await this.prisma.textChunk.findMany({
+      where:{
+        owner_id:user_id,
+        doc_id:doc_id,
+      },
+      select:{
+        text_chunk:true
+      }
+    })
+   // const plainArray = text_chunk.map((chunk) => chunk.text_chunk);
+    console.log(text_chunk)
+    return text_chunk
+  }
   async get_userId_by_email(email: string) {
   return  this.prisma.user.findUnique({
       where:{
@@ -147,8 +163,21 @@ export class doc_query_service {
       }
     })
   }
-  async put_file_to_S3(fileName:string) {
-
+  async put_file_to_S3(doc_id:string,file: Express.Multer.File) {
+    const command =    new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: doc_id,
+      Body: file.buffer
+    });
+    try {
+      const response = await this.S3.send(command);
+      console.log(response);
+      return response
+    } catch (err) {
+        throw err
+    }
+   
+    
   }
   async get_file_from_S3(fileName: string ){
     const command  = new GetObjectCommand({
@@ -181,6 +210,22 @@ export class doc_query_service {
       throw new Error("Unable to decode user information");
     }
   }
+  async update_chat(doc_id:string, owner_id:number ,Message:string,role:"AI"|"HUMAN"){
+    return await this.prisma.conversation.create({
+      data: {
+          doc_id: doc_id,
+          owner_id:owner_id,
+          Message: Message,
+          role: role
+      }
+    })
+  }
+  async generate_summary(doc_id:string, owner_id:number){
+      const text_chunk = await this.retreive_text_chunk(doc_id,owner_id);
+      const query = 'GIVE ME THE SUMMARY OF THE DOCUMENT';
+      const resp =  await this.chat_retrievalQAChain( await DB_to_text_chunk(text_chunk),query)
+      return resp.msg.text;
+  } 
   
 }
 

@@ -53,6 +53,11 @@ model conversation {
   user        User     @relation(fields: [owner_id], references: [id])
   MessageTime DateTime @default(now())
   Message     String
-
+  role        conversation_role 
   @@unique([doc_id, owner_id])
+}
+
+enum conversation_role {
+AI
+HUMAN
 }

@@ -2,29 +2,8 @@ import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import { text_chunk } from "../DTO/text_chunk.dto";
 import { TensorFlowEmbeddings } from "langchain/embeddings/tensorflow";
 import * as tf from '@tensorflow/tfjs-node'
+import { DB_text_Chunk } from "../DTO/DB_textChunk.dto";
  
-async function HNSWLib_search(text_chunk: text_chunk [], query:string ,k?:number ) {
-  if(!k)  k = text_chunk.length /2 ;  //init chunk return
-  // Set the backend to WASM and wait for the module to be ready.
-  tf.setBackend('cpu');
- 
-    const start_time =  Date.now()
-    
-    const vectorStore = await HNSWLib.fromDocuments(text_chunk, new TensorFlowEmbeddings());
-    const End_time =  Date.now()
-    console.log(vectorStore)
-    
-   // console.log('spend' , End_time - start_time)
-  //  console.log('chunk_return' , typeof k ,k , 'query' , query , 'text_chunk', text_chunk)
-    const result =await vectorStore.similaritySearch(query,Number(k));
-    console.log(result)
-    return {str_rep: text_chunktoString(result),
-            text_chunk: result};
- 
-   
-  
-   
-}
 export function text_chunktoString(result:text_chunk[]) :string{
   let new_text = "";
   for (let i = 0; i < result.length; i++) {
@@ -37,7 +16,7 @@ export function text_chunktoString(result:text_chunk[]) :string{
 export function text_chunk_to_DB(result:text_chunk[],doc_id:string, owner_id:number) {
   let text_chunk_db_obj = [];
   for (let i = 0; i < result.length; i++) {
-    const pageContent = result[i].pageContent
+    const pageContent = result[i].pageContent.replace(/\n/g, " ").trim();
      text_chunk_db_obj.push({
       doc_id: doc_id,
       owner_id: owner_id,
@@ -46,4 +25,14 @@ export function text_chunk_to_DB(result:text_chunk[],doc_id:string, owner_id:num
   }
   return text_chunk_db_obj;
 }
-export default HNSWLib_search;
+export function DB_to_text_chunk(result: DB_text_Chunk[]){
+    let text_chunk =[]
+    for (let i = 0; i < result.length; i++) {
+        text_chunk.push({
+          metdadata: '',
+          pageContent: result[0].text_chunk
+        })
+    return text_chunk
+    }
+}
+ 

@@ -5,6 +5,8 @@ import { chat_body } from './DTO/chat_body.dto';
 import { config_text_chunk } from 'src/doc_query/DTO/config_text_chunk.dto';
 import { Public } from 'src/common/decorators';
 import { S3Service } from 'src/S3/S3.service';
+import { Document_id } from './DTO/Document_id.dto';
+ 
  
  
  
@@ -49,9 +51,18 @@ export class doc_query_controller {
     }
     @Post("get_document_detail")
     get_document_detail(
-        @Headers('Authorization') token: string
+        @Headers('Authorization') token: string,
+        @Body() {doc_id} : Document_id
     ){
-        return this.doc_query_service.get_document_detail(token);
+        return this.doc_query_service.get_document_detail(token,doc_id);
+    }
+    //tester
+    @Public()
+    @Post("test")
+    tester(
+    
+    ){
+        return this.doc_query_service.generate_summary('de5d12f8-34bb-4120-adfc-e0db7c7ef887',1);
     }
 }
 
