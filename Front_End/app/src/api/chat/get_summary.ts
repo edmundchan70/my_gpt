@@ -1,10 +1,15 @@
-import { chat_body } from "./DTO/chat_body.dto";
-import service from "../request/request";
 
-export function get_summary(data: chat_body){
+import service from "../request/request";
+import Cookies from "js-cookie";
+import { Document_id } from "./DTO/Document_id.dto";
+
+export function get_summary(data: Document_id){
     return service({
-        url: '/doc_query/summary',
+        url: '/doc_query/generate_summary',
         method: 'post',
-        data: data
+        data: data,
+          headers:{
+            Authorization: 'Bearer ' +Cookies.get("access_token")
+        }
     })
 }

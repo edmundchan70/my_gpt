@@ -9,6 +9,7 @@ import { chat } from '../../api/chat/chat';
 import { chat_body } from '../../api/chat/DTO/chat_body.dto';
 import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import { Theme } from '@emotion/react';
+import { get_summary } from '../../api/chat/get_summary';
  
  
  
@@ -49,10 +50,9 @@ function Message_container({ chat_config }: Props) {
     setDialog((prev) => [...prev!, AI_msg]);
   }
   const summarize_documnet = async ()=>{
-    const SUMMARY_QUERY = 'GIVE ME THE SUMMARY OF THE DOCUMENT'
-    const resp  = await chat(  { 
-      text_chunk: chat_config.text_chunk!,
-      query: SUMMARY_QUERY
+  
+    const resp  = await get_summary(  { 
+        doc_id: doc_id
     });  
     const AI_msg :Message ={
       role:"ai",

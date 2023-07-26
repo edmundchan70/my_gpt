@@ -9,15 +9,14 @@ import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { TensorFlowEmbeddings } from 'langchain/embeddings/tensorflow';
 import { randomUUID } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
- 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/S3/S3.service';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
- 
 import { DB_to_text_chunk, text_chunk_to_DB, text_chunktoString } from './util/HNSWLib';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { user_info } from './DTO/user_info.dto';
 import { conversation } from './DTO/conversation.dto';
+import { chat_body } from './DTO/chat_body.dto';
  
 
 
@@ -91,13 +90,17 @@ export class doc_query_service {
     }
   }
 
-  async chat_retrievalQAChain(text_chunk_array: text_chunk[], query: string) {
+  async chat_retrievalQAChain({doc_id,query}: chat_body , token: string) {
+    const owner_id = await this.get_userId_by_token(token)
     console.log("chat_retrievalQAChain call activated")
     const model = new OpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY_TEST,
       modelName: "gpt-4"
     })
     console.log('Vector store init')
+    //transform data in db into corresponding data structure
+    const text_chunk_array : text_chunk[] = await DB_to_text_chunk(await this.retreive_text_chunk(doc_id,owner_id));
+
     const vectorStore = await HNSWLib.fromDocuments(text_chunk_array, new TensorFlowEmbeddings());
 
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
@@ -107,9 +110,25 @@ export class doc_query_service {
     });
     //save to db 
     const HUMAN_MESSAGE : conversation={
-
+      doc_id: doc_id,
+      owner_id: owner_id,
+      role: "HUMAN",
+      Message:query
     }
-
+    const AI_RESPONSE: conversation={
+      doc_id: doc_id,
+      owner_id: owner_id,
+      role: "AI",
+      Message:text
+    }
+    //add HUMAN MESSAGE 
+    await this.prisma.conversation.create({
+      data:HUMAN_MESSAGE
+    })
+    //add AI Message 
+    await this.prisma.conversation.create({
+      data:AI_RESPONSE
+    })
     return { msg: text }
   }
   async get_user_document_list(token: string){
@@ -134,6 +153,21 @@ export class doc_query_service {
      * 2. Get the pdf document from S3
      * 
      */
+    const owner_id = await this.get_userId_by_token(token);
+    //load conversation history
+    const conversation_history = await this.prisma.conversation.findMany({
+      where:{
+        doc_id:doc_id,
+        owner_id:owner_id
+      },select:{
+        MessageTime:true,
+        Message:true,
+        role:true
+      }
+    })
+    return {
+      conversation_history: conversation_history
+    }
 
     
   }
@@ -162,6 +196,11 @@ export class doc_query_service {
         id:true
       }
     })
+  }
+  async get_userId_by_token(token: string):Promise<number> {
+    const decode_info :user_info = await this.decode_user_from_token(token);
+    const {sub} = decode_info;
+    return sub 
   }
   async put_file_to_S3(doc_id:string,file: Express.Multer.File) {
     const command =    new PutObjectCommand({
@@ -220,10 +259,9 @@ export class doc_query_service {
       }
     })
   }
-  async generate_summary(doc_id:string, owner_id:number){
-      const text_chunk = await this.retreive_text_chunk(doc_id,owner_id);
+  async generate_summary(doc_id:string, token:string){
       const query = 'GIVE ME THE SUMMARY OF THE DOCUMENT';
-      const resp =  await this.chat_retrievalQAChain( await DB_to_text_chunk(text_chunk),query)
+      const resp =  await this.chat_retrievalQAChain({doc_id:doc_id,query:query},token)
       return resp.msg.text;
   } 
   

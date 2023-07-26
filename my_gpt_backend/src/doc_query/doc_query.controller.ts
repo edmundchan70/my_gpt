@@ -20,11 +20,9 @@ export class doc_query_controller {
         console.log("doc_query running");
     }
     @Post('chat')
-    chat(@Body()Body :chat_body  ){
-        const {text_chunk,query} = Body    
-        const API_KEY :string  = process.env.OPENAI_API_KEY_TEST
-        console.log(text_chunk)
-        return this.doc_query_service.chat_retrievalQAChain(text_chunk,query);
+    chat(@Body()chat_body : chat_body ,
+         @Headers('Authorization') token: string){
+        return this.doc_query_service.chat_retrievalQAChain(chat_body,token);
     }
  
     @Post('upload_pdf')
@@ -42,7 +40,7 @@ export class doc_query_controller {
     return this.doc_query_service.file_to_text_chunk(file,token)
 
     }
-    
+
     @Post("get_user_document_list")
     get_user_document_list(
         @Headers('Authorization') token: string
@@ -56,13 +54,19 @@ export class doc_query_controller {
     ){
         return this.doc_query_service.get_document_detail(token,doc_id);
     }
+    @Post("generate_summary")
+    generate_summary(     
+        @Headers('Authorization') token: string,
+        @Body() {doc_id} : Document_id){
+        return this.doc_query_service.generate_summary(token,doc_id);
+    }
     //tester
     @Public()
     @Post("test")
     tester(
     
     ){
-        return this.doc_query_service.generate_summary('de5d12f8-34bb-4120-adfc-e0db7c7ef887',1);
+       // return this.doc_query_service.generate_summary('de5d12f8-34bb-4120-adfc-e0db7c7ef887',1);
     }
 }
 
