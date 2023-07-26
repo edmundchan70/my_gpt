@@ -2,13 +2,10 @@
 import service from "../request/request";
 import { getAccessToken } from "../../util/getToken/getToken";
 
-export function upload_file(file: File){
-    const formData = new FormData();
-    formData.append('document',file);
+export function get_user_document_list(){
     return service({
-        url: '/doc_query/upload_pdf',
+        url: '/doc_query/get_user_document_list',
         method: 'post',
-        data: formData,
         headers:{
             Authorization: 'Bearer ' +getAccessToken()
         }

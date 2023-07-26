@@ -1,5 +1,5 @@
 import { HNSWLib } from "langchain/vectorstores/hnswlib";
-import { text_chunk } from "../../DTO/doc_query/text_chunk.dto";
+import { text_chunk } from "../DTO/text_chunk.dto";
 import { TensorFlowEmbeddings } from "langchain/embeddings/tensorflow";
 import * as tf from '@tensorflow/tfjs-node'
  
@@ -33,5 +33,17 @@ export function text_chunktoString(result:text_chunk[]) :string{
   }
   return new_text
 }
- 
+
+export function text_chunk_to_DB(result:text_chunk[],doc_id:string, owner_id:number) {
+  let text_chunk_db_obj = [];
+  for (let i = 0; i < result.length; i++) {
+    const pageContent = result[i].pageContent
+     text_chunk_db_obj.push({
+      doc_id: doc_id,
+      owner_id: owner_id,
+      text_chunk: pageContent
+     })
+  }
+  return text_chunk_db_obj;
+}
 export default HNSWLib_search;

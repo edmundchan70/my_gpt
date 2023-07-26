@@ -8,7 +8,7 @@ type Props = {
 }
 
 function ListDocument({data}: Props) {
-  const {DocId,DocTitle,DocType}  =data;
+  const {doc_id,FileName}  =data;
   
   const Avatar_sx  : SxProps<Theme> = {
       fontWeight:"bold",
@@ -28,7 +28,7 @@ function ListDocument({data}: Props) {
           <PictureAsPdfIcon />
         </Avatar>
           <Typography variant='h6'  noWrap>
-                    {DocTitle}  
+                    {FileName}  
           </Typography>
     </Container>
   )

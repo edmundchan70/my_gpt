@@ -1,4 +1,4 @@
-import { text_chunk } from "src/DTO/doc_query/text_chunk.dto";
+import { text_chunk } from "src/doc_query/DTO/text_chunk.dto";
 
 export function text_chunk_toString(text: text_chunk[]) : string{
    

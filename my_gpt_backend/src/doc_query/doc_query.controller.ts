@@ -1,8 +1,8 @@
 import { Controller, UseInterceptors, UploadedFile, Post, ParseFilePipe, FileTypeValidator,Response, Body, Get, Headers, Res, Header   } from '@nestjs/common';
  import {FileInterceptor} from "@nestjs/platform-express"
 import { doc_query_service } from './doc_query.service';
-import { chat_body } from '../DTO/doc_query/chat_body.dto';
-import { config_text_chunk } from 'src/DTO/doc_query/config_text_chunk.dto';
+import { chat_body } from './DTO/chat_body.dto';
+import { config_text_chunk } from 'src/doc_query/DTO/config_text_chunk.dto';
 import { Public } from 'src/common/decorators';
 import { S3Service } from 'src/S3/S3.service';
  
@@ -27,7 +27,6 @@ export class doc_query_controller {
  
     @Post('upload_pdf')
     @UseInterceptors(FileInterceptor('document'))
-    
     handle_file(
         @Headers('Authorization') token: string,
         @Body() Body :any, //change  
@@ -42,11 +41,17 @@ export class doc_query_controller {
 
     }
     
-    @Post("get_user_document")
-    get_user_document(
+    @Post("get_user_document_list")
+    get_user_document_list(
         @Headers('Authorization') token: string
     ){
-        return this.doc_query_service.get_user_document(token)
+        return this.doc_query_service.get_user_document_list(token)
+    }
+    @Post("get_document_detail")
+    get_document_detail(
+        @Headers('Authorization') token: string
+    ){
+        return this.doc_query_service.get_document_detail(token);
     }
 }
 

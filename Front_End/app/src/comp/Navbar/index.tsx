@@ -1,5 +1,5 @@
 import { Avatar, Button, Container, Divider, Grid, List, ListItem, Paper, Theme, Typography, colors } from '@mui/material'
-import React, {useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import PersonIcon from '@mui/icons-material/Person';
 import { SxProps } from "@mui/material"
 import ListDocument from './ListDocument';
@@ -8,6 +8,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import { upload_file } from '../../api/file/upload_file';
 import PlayGround from '../Playground';
+import { get_user_document_list } from '../../api/get_user_document/get_user_document';
 type Props = {}
  
 function Navbar({ }: Props) {
@@ -44,14 +45,7 @@ function Navbar({ }: Props) {
       system_msg: "Remeber the following data and use them to answer user question: "
     }
     set_chat_config(init_chat_config);
- 
-    //add corresponding tag to the navBar and select it 
-    const new_document: Document = {
-      DocId: 4,
-      DocTitle: selectedFile.name,
-      DocType: selectedFile.type
-    }
-    setDocument((prev) => [...prev, new_document])
+    await load_user_document()
   };
   const triggerUpload = () => {
     const target_element = document.getElementById('upload');
@@ -59,8 +53,15 @@ function Navbar({ }: Props) {
     target_element?.click();
   }
   const loadDocument = (DocId: number) => {
+    console.log(DocId)
     setselectDoc(DocId);
   }
+  const load_user_document = async()=>{
+    const resp = await get_user_document_list();
+    console.log('user document list load success')
+    setDocument(resp.data)
+}
+
   //const
   const AVATAR_SX: SxProps<Theme> = {
     width: '100px',
@@ -73,6 +74,11 @@ function Navbar({ }: Props) {
     flexDirection: "column"
   }
   console.log(chat_config)
+  console.log(Document)
+  useEffect(()=>{
+     
+    load_user_document()
+  },[])
   return (
     <>
  
@@ -111,12 +117,12 @@ function Navbar({ }: Props) {
                     <AddCircleOutlineIcon />
                   </Button>
                   {Document.map((item, i) => {
-                    if (item.DocId === selectDoc)
-                      return (<Button fullWidth onClick={() => { loadDocument(item.DocId) }} sx={{ backgroundColor: colors.blue[400] }}>
+                    if (item.doc_id === selectDoc)
+                      return (<Button fullWidth onClick={() => { loadDocument(item.doc_id) }} sx={{ backgroundColor: colors.blue[400] }}>
                         <ListDocument data={item} />
                       </Button>)
                     else
-                      return (<Button fullWidth onClick={() => { loadDocument(item.DocId) }} sx={{
+                      return (<Button fullWidth onClick={() => { loadDocument(item.doc_id) }} sx={{
                         '&:hover': {
                           background: colors.blue[100]
                         }

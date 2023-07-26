@@ -1,11 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
-import { CharacterTextSplitter, RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-
 import { RetrievalQAChain } from "langchain/chains"
- 
-import { text_chunk } from '../DTO/doc_query/text_chunk.dto';
-import HNSWLib_search, { text_chunktoString } from './util/HNSWLib';
+import { text_chunk } from './DTO/text_chunk.dto';
 import { openAiService } from 'src/openAI/openAi.service';
 import { pineconeService } from 'src/pinecone/pinecone.service';
 import { OpenAI } from "langchain/llms/openai";
@@ -17,7 +13,10 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/S3/S3.service';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+ 
+import { text_chunk_to_DB, text_chunktoString } from './util/HNSWLib';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { user_info } from './DTO/user_info.dto';
  
 
 
@@ -44,7 +43,7 @@ export class doc_query_service {
       }); */
     const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 300 });
     const split_text = await splitter.splitDocuments(docs);
-    console.log(split_text.length)
+ 
     console.log("COMPLETED REQIESRT file_to_text_chunk")
     //filter out the metadata in output
     const output = split_text.map(item => {
@@ -53,11 +52,11 @@ export class doc_query_service {
     })
     const rawData = text_chunktoString(split_text);
     const doc_id = randomUUID()
-    console.log(file)
+ 
     const fileName = file.originalname
     const  decoded_info :any  = this.jwtService.decode(token.slice("Bearer ".length));
   
-    console.log('decode info',decoded_info)
+ 
     const {id} = await this.get_userId_by_email(decoded_info.email)
     //doc_id will also be S3 fileName
     try{
@@ -85,10 +84,15 @@ export class doc_query_service {
       }
     console.log('save to S3 success')
     console.log(id)
-    
+    //save text chunk to db
+    const text_chunk_db = text_chunk_to_DB(split_text,doc_id,id)
+    console.log(text_chunk_db)
+    await this.prisma.textChunk.createMany({
+      data: text_chunk_db
+    })
     return {
       split_chunk: output,
-      rawData: rawData,
+      rawData: rawData, 
       relevent_data: {
         chunkSize: chunkSize,
         chunkOverlap: chunkOverlap
@@ -112,10 +116,25 @@ export class doc_query_service {
     });
     return { msg: res }
   }
-  async get_user_document(token: string){
+  async get_user_document_list(token: string){
+   const decode_info :user_info = await this.decode_user_from_token(token);
+   const {sub} = decode_info;
+ 
+   return await this.prisma.document.findMany({
+      where:{
+        owner_id:sub
+      },
+      select:{
+        FileName:true,
+        doc_id:true 
+      },
+      orderBy: {CreatDate: 'desc'} 
+    })
+
+  }
+  async get_document_detail(token:string)  {
     
   }
-
   
   //helper functions 
   async get_userId_by_email(email: string) {
@@ -152,6 +171,15 @@ export class doc_query_service {
      
       
     
+  }
+  async decode_user_from_token(token:string) :Promise<user_info>{
+    try {
+      const decodedData = await this.jwtService.decode(token.slice("Bearer ".length));
+      return decodedData as user_info;
+    } catch (error) {
+      // Handle error, if needed
+      throw new Error("Unable to decode user information");
+    }
   }
   
 }

@@ -1,5 +1,5 @@
 export interface Document{
-    DocId : number ,
-    DocType : string,
-    DocTitle:string
+    doc_id : number ,
+ 
+    FileName:string
 }

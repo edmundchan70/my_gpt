@@ -10,28 +10,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id  Int @id @default(autoincrement())
-  created_at DateTime @default(now())
-  updated_at DateTime  @updatedAt()
-  email String @unique
-  hash String
-  hashedRT String? 
-  document document[] 
+model User {
+  id           Int            @id @default(autoincrement())
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt()
+  email        String         @unique
+  hash         String
+  hashedRT     String?
+  document     document[]
+  conversation conversation[]
+  TextChunk    TextChunk[]
 }
-model document{
-  doc_id String @id @default(uuid())
-  owner_id Int
-  user   User @relation(fields: [owner_id], references: [id] )
-  FileName String 
-  content String
-  TextChunk TextChunk[]
+
+model document {
+  doc_id       String         @id @default(uuid())
+  owner_id     Int
+  user         User           @relation(fields: [owner_id], references: [id])
+  FileName     String
+  content      String
+  CreatDate    DateTime       @default(now())
+  TextChunk    TextChunk[]
+  conversation conversation[]
+
   @@unique([owner_id, FileName]) // Composite unique constraint
 }
+
 model TextChunk {
-  textChunk_id Int @id @default(autoincrement())
-  doc_id String 
-  doc document @relation(fields: [doc_id], references: [doc_id])
-  text_chunk String
-}
+  text_chunk_id Int   @id @default(autoincrement())
+  doc_id       String
+  owner_id     Int
+  user         User     @relation(fields: [owner_id], references: [id])
+  doc          document @relation(fields: [doc_id], references: [doc_id])
+  timeAdd      DateTime @default(now())
+  text_chunk   String
  
+}
+
+model conversation {
+  doc_id      String
+  doc         document @relation(fields: [doc_id], references: [doc_id])
+  owner_id    Int
+  user        User     @relation(fields: [owner_id], references: [id])
+  MessageTime DateTime @default(now())
+  Message     String
+
+  @@unique([doc_id, owner_id])
+}
