@@ -102,10 +102,11 @@ export class doc_query_service {
     const vectorStore = await HNSWLib.fromDocuments(text_chunk_array, new TensorFlowEmbeddings());
 
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
-    console.log("Querying llm call activated")
+    console.log("Querying llm call activated",query)
     const {text} = await chain.call({
       query: query
     });
+    console.log(text)
     //save to db 
     const HUMAN_MESSAGE : conversation={
       doc_id: doc_id,

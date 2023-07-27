@@ -4,8 +4,10 @@ import { routes } from './routes';
 import { ThemeProvider } from '@emotion/react';
 import { lightTheme } from './util/mui_config/theme';
 import { CssBaseline } from '@mui/material';
+import { getAccessToken } from './util/getToken/getToken';
 
 function App() {
+ 
   return( 
     <ThemeProvider theme={lightTheme} >
         <CssBaseline />
@@ -14,7 +16,7 @@ function App() {
   
     
     )
-    
+ 
 }
 
 export default App;

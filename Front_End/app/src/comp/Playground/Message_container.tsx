@@ -42,30 +42,19 @@ function Message_container({ doc_id }: Props) {
     }
     //send user respond to openAI with corresponding data 
     const resp  = await chat(chat_body);  
-    console.log(resp)
-    const AI_msg :Message ={
-      role:"HUMAN",
-      msg: resp.data 
-    }
-    console.log(resp.data);
  
+    const AI_msg :Message ={
+      role:"AI",
+      msg: resp.data.msg
+    }
+   
     
     setDialog((prev) => [...prev!, AI_msg]);
   }
-  const summarize_documnet = async ()=>{ 
-    const resp  = await get_summary(  { 
-        doc_id: doc_id
-    });  
-    console.log('resp from get_summary', resp)
-    const AI_msg :Message ={
-      role:"HUMAN",
-      msg: resp.data
-    }
-    console.log(resp, 'sumarize');
-    setDialog(() =>  [AI_msg]);
-  }
+ 
   const get_conversation= async (doc_id:string)=>{
     const resp : AxiosResponse<conversation[]>= await retrieve_conversation({doc_id: doc_id})
+ 
     resp.data.map(({MessageTime,Message,role}:conversation,i)=>{
       console.log(Message,role)
       const msg : Message= {

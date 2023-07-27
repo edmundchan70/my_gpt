@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './DTO';
 import { Tokens } from './types';
@@ -37,10 +37,19 @@ export class AuthController {
     @Post('refresh')
     @UseGuards(RtGuard)
     @HttpCode(HttpStatus.OK)
-    refreshTokens( @GetCurrentUserId() userId  :number,
+    refreshTokens( 
+                 @Headers('Authorization') token: string,
+                  @GetCurrentUserId() userId  :number,
                   @GetCurrentUser('refreshToken') refreshToken :string){
- 
+                    console.log(token)
         console.log(userId, refreshToken)
         return this.authService.refreshTokens(userId,refreshToken)
+    }
+    @Public()
+    @Post("verifyToken")
+    verifyToken(
+        @Headers('Authorization') token: string
+    ){
+        return this.authService.verifyToken(token)
     }
 }

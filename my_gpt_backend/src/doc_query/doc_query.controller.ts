@@ -22,6 +22,8 @@ export class doc_query_controller {
     @Post('chat')
     chat(@Body()chat_body : chat_body ,
          @Headers('Authorization') token: string){
+        
+            console.log("CONTROLLER: ", chat_body)
         return this.doc_query_service.chat_retrievalQAChain(chat_body,token);
     }
  

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './DTO';
 import *  as bcrypt from 'bcrypt'
@@ -13,12 +13,15 @@ export class AuthService {
     hashData(data:string ){
         return bcrypt.hash(data,10);
     }
-    decodeToken(token:string){
-        console.log(          this.jwtService.decode(token))
-
-       // return decoded.email;
+   
+    async verifyToken(token:string){
+        try{
+            return await this.jwtService.verify(token);
+        }catch(err:any){
+            throw new UnauthorizedException("FAIL TO Verify JWT TOKEN")
+        }
+       
     }
-    
     async signupLocal(Body : AuthDto){
         const hash = await this.hashData(Body.password);
         const newUser = await this.prisma.user.create({
@@ -41,7 +44,7 @@ export class AuthService {
                 email: email
             }, {
                 secret: process.env.AT_SECRET,
-                expiresIn: 60*15
+                expiresIn: 60*60
             }
         ),
         this.jwtService.signAsync({
@@ -102,6 +105,7 @@ export class AuthService {
                 id:userId
             }
         })
+        console.log('refresh_token is called ')
         if(!user) throw new ForbiddenException("NO USER FOUND");
         const rtMatches = await bcrypt.compare(refresh_token,user.hashedRT);
         if(!rtMatches) throw new ForbiddenException("Access denied(Hashes error)")
@@ -110,5 +114,5 @@ export class AuthService {
         await this.updateRtHash(user.id, tokens.refresh_token);
         return tokens; 
 
-    }    
+    }     
 }

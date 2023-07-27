@@ -1,3 +1,4 @@
+import { Container } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
  
@@ -14,14 +15,19 @@ function Display_Pdf({ File }: Props) {
   
    console.log(File)
   return  File instanceof Uint8Array?
- <Document
+ 
+       <Document
         file={{data:File}}>
         <Page pageIndex={0}/>
 
 </Document>
+
+ 
+ 
     
     :
-    <Document
+ 
+  <Document
     file={File}
     onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
       {numPages&&
@@ -30,6 +36,8 @@ function Display_Pdf({ File }: Props) {
         }) 
       }
   </Document>
+ 
+   
     
   
  
