@@ -2,6 +2,7 @@ import Axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios"
 import Cookies from "js-cookie";
 import { getAccessToken } from "../../util/getToken/getToken";
  
+ 
 const BASE_URL  ='http://localhost:1919'
 const onResponse = (response: AxiosResponse): AxiosResponse => {
     return response;
@@ -38,7 +39,10 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
                 
                 return origin_resp
             }catch(err:any){
-                return Promise.reject(err)
+                console.log('err,upper' ,err)
+                alert("Refresh Key not found, please re-login!")
+                window.location.href ="http://localhost:3000/login"
+                return  ; //
             } 
         }
     }
