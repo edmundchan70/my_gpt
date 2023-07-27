@@ -1,4 +1,4 @@
 export type Message={
-    role: "ai" |"human",
+    role: "AI" |"HUMAN",
     msg: string
 }

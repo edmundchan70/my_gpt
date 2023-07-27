@@ -33,6 +33,7 @@ function Navbar({ }: Props) {
     }
     setUploadFile(selectedFile);
     const resp = await upload_file(selectedFile);
+    //upload folder will be set to be selected 
     set_selected_Doc_id(resp.data.doc_id);
     const blob_uint8Array = new Uint8Array(await selectedFile.arrayBuffer())
     setblob(blob_uint8Array)
@@ -46,7 +47,7 @@ function Navbar({ }: Props) {
   }
   const loadDocument = async (DocId: string,FileName:string) => {
     console.log(DocId)
-    const  resp = await get_file_from_s3(FileName);
+    const  resp = await get_file_from_s3(DocId);
     if(resp === undefined || resp === null) {alert("ERROR LOADING FILE (CONNECTING TO S3)")
      return;}
     //set blob data 

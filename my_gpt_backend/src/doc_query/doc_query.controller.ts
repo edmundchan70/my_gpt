@@ -58,13 +58,19 @@ export class doc_query_controller {
     generate_summary(     
         @Headers('Authorization') token: string,
         @Body() {doc_id} : Document_id){
-        return this.doc_query_service.generate_summary(token,doc_id);
+        return this.doc_query_service.generate_summary(doc_id,token);
     }
+    @Post("retrieve_conversation")
+    retrieve_conversation(
+        @Headers('Authorization') token: string,
+        @Body() {doc_id} : Document_id){
+            return this.doc_query_service.retrieve_conversation(doc_id,token);
+        }
+    
     //tester
     @Public()
     @Post("test")
     tester(
-    
     ){
        // return this.doc_query_service.generate_summary('de5d12f8-34bb-4120-adfc-e0db7c7ef887',1);
     }

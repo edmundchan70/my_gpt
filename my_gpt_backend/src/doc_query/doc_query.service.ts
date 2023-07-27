@@ -80,6 +80,8 @@ export class doc_query_service {
     await this.prisma.textChunk.createMany({
       data: text_chunk_db
     })
+    //generate the summary 
+   
     return {
       doc_id: doc_id,
       FileName:fileName,
@@ -167,6 +169,23 @@ export class doc_query_service {
 
     
   }
+  async retrieve_conversation(doc_id:string,token:string){
+    const owner_id = await this.get_userId_by_token(token);
+    const resp =  await this.prisma.conversation.findMany({
+      where:{
+        owner_id:owner_id,
+        doc_id:doc_id
+      },select:{
+        MessageTime:true,
+        Message:true,
+        role:true
+      },
+      orderBy:{
+        MessageTime:"asc"
+      }
+    })
+      return resp ;
+  }
   
   //helper functions 
   async retreive_text_chunk(doc_id:string,user_id : number){
@@ -194,7 +213,9 @@ export class doc_query_service {
     })
   }
   async get_userId_by_token(token: string):Promise<number> {
+    console.log(token)
     const decode_info :user_info = await this.decode_user_from_token(token);
+    console.log(decode_info)
     const {sub} = decode_info;
     return sub 
   }
@@ -258,7 +279,8 @@ export class doc_query_service {
   async generate_summary(doc_id:string, token:string){
       const query = 'GIVE ME THE SUMMARY OF THE DOCUMENT';
       const resp =  await this.chat_retrievalQAChain({doc_id:doc_id,query:query},token)
-      return resp.msg.text;
+      console.log(resp)
+      return resp.msg;
   } 
   
 }

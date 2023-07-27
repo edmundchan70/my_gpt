@@ -11,6 +11,9 @@ import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import { Theme } from '@emotion/react';
 import { get_summary } from '../../api/chat/get_summary';
 import { Document_id } from '../../api/chat/DTO/Document_id.dto';
+import { retrieve_conversation } from '../../api/chat/retreive_conversation';
+import { conversation } from '../../api/chat/DTO/conversation.dto';
+import { AxiosResponse } from 'axios';
  
  
 type Props = {
@@ -21,14 +24,14 @@ function Message_container({ doc_id }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
  
   console.log('chat_config: ',doc_id)
-  const [Dialog, setDialog] = useState<Message[]|null>(null);
+  const [Dialog, setDialog] = useState<Message[]>([]);
 
   const handle_input_msg = async() => {
     if (!inputMessage.current?.value) alert("PLEASE ENTER SOMETHING!")
     //handle user input , update dialog
     const input_msg = inputMessage.current!.value
     const human_msg : Message= {
-      role: "human",
+      role: "HUMAN",
       msg:  input_msg
     } 
     setDialog((prev) => [...prev!, human_msg]);
@@ -41,8 +44,8 @@ function Message_container({ doc_id }: Props) {
     const resp  = await chat(chat_body);  
     console.log(resp)
     const AI_msg :Message ={
-      role:"ai",
-      msg: resp.data.msg.text
+      role:"HUMAN",
+      msg: resp.data 
     }
     console.log(resp.data);
  
@@ -53,12 +56,27 @@ function Message_container({ doc_id }: Props) {
     const resp  = await get_summary(  { 
         doc_id: doc_id
     });  
+    console.log('resp from get_summary', resp)
     const AI_msg :Message ={
-      role:"ai",
-      msg: resp.data.msg.text
+      role:"HUMAN",
+      msg: resp.data
     }
     console.log(resp, 'sumarize');
     setDialog(() =>  [AI_msg]);
+  }
+  const get_conversation= async (doc_id:string)=>{
+    const resp : AxiosResponse<conversation[]>= await retrieve_conversation({doc_id: doc_id})
+    resp.data.map(({MessageTime,Message,role}:conversation,i)=>{
+      console.log(Message,role)
+      const msg : Message= {
+        role: role,
+        msg:  Message
+      }
+      
+      setDialog((prev?)=> [...prev,msg])
+   
+
+    })
   }
   const container_AI  :SxProps<Theme>  =  {
  
@@ -79,8 +97,12 @@ function Message_container({ doc_id }: Props) {
     display:"flex",
     gap:"10px"} 
   useEffect(()=>{
-    summarize_documnet();
-  },[])
+   // summarize_documnet();
+   if(doc_id) {
+    setDialog([])
+    get_conversation(doc_id);
+   }
+  },[doc_id])
  
   
   return (
@@ -97,9 +119,9 @@ function Message_container({ doc_id }: Props) {
             {Dialog&&Dialog.map((item :any) => {
               return (
 
-                <Container  sx={item.role === "ai" ? container_AI:
+                <Container  sx={item.role === "AI" ? container_AI:
                                                     container_human}>
-              {item.role ==="ai"&& 
+              {item.role === "AI"&& 
                     <Avatar sx={{margin:"auto"}}>
                     <SmartToyIcon />
                 </Avatar>}
@@ -109,7 +131,7 @@ function Message_container({ doc_id }: Props) {
                     <Typography sx={{fontSize:'14px'}}> {item.msg}</Typography>
                     
                 </Container>
-                {item.role !=="ai"&& 
+                {item.role !== "AI"&& 
                     <Avatar sx={{margin:"auto"}}>
                     <PersonIcon />
                 </Avatar>}

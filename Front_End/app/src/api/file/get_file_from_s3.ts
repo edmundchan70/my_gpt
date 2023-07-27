@@ -11,7 +11,7 @@ export const get_file_from_s3 = async (FileName: string) =>{
          secretAccessKey: process.env.REACT_APP_S3_SECRETE_KEY
        }
     })
-    
+     
     const command = new GetObjectCommand({
      Bucket:process.env.REACT_APP_S3_BUCKET_NAME,
      Key:FileName
