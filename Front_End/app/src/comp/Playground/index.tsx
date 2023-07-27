@@ -2,33 +2,25 @@ import React, { useRef, useState,createContext, Context, useEffect } from 'react
 import Message_container from './Message_container'
 import CardHeader from '@mui/material/CardHeader';
 import { Box, Button, Container, Divider, Grid, Paper } from '@mui/material';
-import UploadImg from "./assets/Upload.png"
-import Test_pdf from "./assets/CoverLEtter.pdf";
-import { upload_file } from '../../api/file/upload_file';
-
  
- 
-
-import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import Display_Pdf from './Display_Pdf';
-import Cookies from 'js-cookie';
- 
  
  
 type Props = {
-  chat_config: Chat_config
+  doc_id : string,
+  File: File | Uint8Array
 }
  
-function PlayGround({ chat_config}: Props) {
+function PlayGround({ doc_id ,File}: Props) {
   return (
     <> 
     
  
       
-            {console.log('cgat _congif',chat_config)}
+            {console.log('cgat _congif')}
               <Container  sx={{display: 'flex',justifyContent:"center",gap:"40px"}}>
-                  <Message_container  chat_config={chat_config} />
-                  <Display_Pdf File={chat_config.File!} />
+                  <Message_container  doc_id={doc_id} />
+                  <Display_Pdf File={File} />
               </Container>
     
          

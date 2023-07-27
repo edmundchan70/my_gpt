@@ -3,25 +3,25 @@ import React, {useEffect, useState } from 'react'
 import PersonIcon from '@mui/icons-material/Person';
 import { SxProps } from "@mui/material"
 import ListDocument from './ListDocument';
-import { Document } from '../DTO/NavbarDto/Document.dto';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import { upload_file } from '../../api/file/upload_file';
 import PlayGround from '../Playground';
 import { get_user_document_list } from '../../api/get_user_document/get_user_document';
+import { get_file_from_s3 } from '../../api/file/get_file_from_s3';
+import { Document } from '../DTO/NavbarDto/Document.dto';
 type Props = {}
  
 function Navbar({ }: Props) {
-
-  const [chat_config, set_chat_config] = useState<Chat_config | null>(null);
+ 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [selectDoc, setselectDoc] = useState<number>(0);
+  const [selected_Doc_id, set_selected_Doc_id] = useState<string>("");
+  const [blob, setblob] = useState<null| Uint8Array>(null);
   // const [Document, setDocument] = useState<Document[]>([]);
   const [Document, setDocument] = useState<Document[]>([
   ]);
   //function
   const handleFileInputChange = async (event: any) => {
-    const selectedFile = event.target.files[0];
+    const selectedFile : File = event.target.files[0];
     console.log(selectedFile)
     if (selectedFile) {
       const reader = new FileReader();
@@ -33,28 +33,26 @@ function Navbar({ }: Props) {
     }
     setUploadFile(selectedFile);
     const resp = await upload_file(selectedFile);
-    console.log(resp.data)
-    const { split_chunk, rawData, relevent_data } = resp.data;
-    const init_chat_config: Chat_config = {
-      chunkSize: relevent_data.chunkSize,
-      chunkOverlap: relevent_data.chunkOVerlap,
-      rawData: rawData,
-      text_chunk: split_chunk,
-      temperature: 0.8,
-      File: selectedFile,
-      system_msg: "Remeber the following data and use them to answer user question: "
-    }
-    set_chat_config(init_chat_config);
+    set_selected_Doc_id(resp.data.doc_id);
+    const blob_uint8Array = new Uint8Array(await selectedFile.arrayBuffer())
+    setblob(blob_uint8Array)
     await load_user_document()
+    
   };
   const triggerUpload = () => {
     const target_element = document.getElementById('upload');
     console.log(target_element)
     target_element?.click();
   }
-  const loadDocument = (DocId: number) => {
+  const loadDocument = async (DocId: string,FileName:string) => {
     console.log(DocId)
-    setselectDoc(DocId);
+    const  resp = await get_file_from_s3(FileName);
+    if(resp === undefined || resp === null) {alert("ERROR LOADING FILE (CONNECTING TO S3)")
+     return;}
+    //set blob data 
+    setblob(resp)
+     
+    set_selected_Doc_id(DocId);
   }
   const load_user_document = async()=>{
     const resp = await get_user_document_list();
@@ -73,7 +71,7 @@ function Navbar({ }: Props) {
     display: "flex",
     flexDirection: "column"
   }
-  console.log(chat_config)
+ 
   console.log(Document)
   useEffect(()=>{
      
@@ -117,12 +115,12 @@ function Navbar({ }: Props) {
                     <AddCircleOutlineIcon />
                   </Button>
                   {Document.map((item, i) => {
-                    if (item.doc_id === selectDoc)
-                      return (<Button fullWidth onClick={() => { loadDocument(item.doc_id) }} sx={{ backgroundColor: colors.blue[400] }}>
+                    if (item.doc_id === selected_Doc_id)
+                      return (<Button fullWidth onClick={() => { loadDocument(item.doc_id,item.FileName) }} sx={{ backgroundColor: colors.blue[400] }}>
                         <ListDocument data={item} />
                       </Button>)
                     else
-                      return (<Button fullWidth onClick={() => { loadDocument(item.doc_id) }} sx={{
+                      return (<Button fullWidth onClick={() => { loadDocument(item.doc_id,item.FileName) }} sx={{
                         '&:hover': {
                           background: colors.blue[100]
                         }
@@ -139,7 +137,7 @@ function Navbar({ }: Props) {
       
           </Grid>
           <Grid item xs={10}>
-          {chat_config&&  <PlayGround chat_config={chat_config!} />}
+                  {blob&&<PlayGround doc_id={selected_Doc_id}   File={blob}/>}
           </Grid>
         </Grid>
 

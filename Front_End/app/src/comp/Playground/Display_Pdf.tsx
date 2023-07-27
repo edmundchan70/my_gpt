@@ -6,32 +6,31 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 type Props = {
-  File?: File,
-  Data?: Uint8Array
+  File: File | Uint8Array
 }
-function Display_Pdf({ File ,Data}: Props) {
+function Display_Pdf({ File }: Props) {
  
   const [numPages, setNumPages] = useState<number | null>(null);
   
    console.log(File)
-  return File?
-    <Document
-      file={File}
-      onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
-        {numPages&&
-          Array.from({length:numPages!},(item,i)=>{
-            return (<Page  pageIndex={i}></Page>)
-          }) 
-        }
-    </Document>:
+  return  File instanceof Uint8Array?
+ <Document
+        file={{data:File}}>
+        <Page pageIndex={0}/>
+
+</Document>
     
+    :
     <Document
-      file={{data:Data}}  
-      
-     >
-      <Page pageIndex={0}/>
+    file={File}
+    onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
+      {numPages&&
+        Array.from({length:numPages!},(item,i)=>{
+          return (<Page  pageIndex={i}></Page>)
+        }) 
+      }
+  </Document>
     
-    </Document>
   
  
 }

@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
-import { chat_body } from "./DTO/chat_body.dto";
+ 
 import service from "../request/request";
+ 
+import { chat_body } from "./DTO/chat_body.dto";
 
 export function chat(data: chat_body){
     return service({

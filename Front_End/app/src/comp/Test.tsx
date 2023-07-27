@@ -33,7 +33,8 @@ function Test({}: Props) {
  
     },[]) 
   
-    return blob ? <Display_Pdf Data={blob} /> : <>LOADING</>;
+    //return blob ? <Display_Pdf Data={blob} /> : 
+    return <>LOADING</>;
 }
 
 export default Test

@@ -81,12 +81,8 @@ export class doc_query_service {
       data: text_chunk_db
     })
     return {
-      split_chunk: output,
-      rawData: rawData, 
-      relevent_data: {
-        chunkSize: chunkSize,
-        chunkOverlap: chunkOverlap
-      }
+      doc_id: doc_id,
+      FileName:fileName,
     }
   }
 

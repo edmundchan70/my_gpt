@@ -10,32 +10,32 @@ import { chat_body } from '../../api/chat/DTO/chat_body.dto';
 import { Chat_config } from '../DTO/PlaygroundDto/Chat_config';
 import { Theme } from '@emotion/react';
 import { get_summary } from '../../api/chat/get_summary';
+import { Document_id } from '../../api/chat/DTO/Document_id.dto';
  
  
- 
- 
-type Props ={
-  chat_config: Chat_config
+type Props = {
+  doc_id : string
 }
-function Message_container({ chat_config }: Props) {
+
+function Message_container({ doc_id }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
  
-  console.log('chat_config: ',chat_config)
+  console.log('chat_config: ',doc_id)
   const [Dialog, setDialog] = useState<Message[]|null>(null);
 
   const handle_input_msg = async() => {
     if (!inputMessage.current?.value) alert("PLEASE ENTER SOMETHING!")
-
     //handle user input , update dialog
+    const input_msg = inputMessage.current!.value
     const human_msg : Message= {
       role: "human",
-      msg: inputMessage.current!.value
+      msg:  input_msg
     } 
     setDialog((prev) => [...prev!, human_msg]);
     inputMessage.current!.value=""
-    const chat_body :chat_body = {
-        text_chunk: chat_config.text_chunk!,
-        query: human_msg.msg
+    const chat_body : chat_body = {
+      doc_id:doc_id,
+      query: input_msg
     }
     //send user respond to openAI with corresponding data 
     const resp  = await chat(chat_body);  
@@ -49,8 +49,7 @@ function Message_container({ chat_config }: Props) {
     
     setDialog((prev) => [...prev!, AI_msg]);
   }
-  const summarize_documnet = async ()=>{
-  
+  const summarize_documnet = async ()=>{ 
     const resp  = await get_summary(  { 
         doc_id: doc_id
     });  
@@ -80,8 +79,8 @@ function Message_container({ chat_config }: Props) {
     display:"flex",
     gap:"10px"} 
   useEffect(()=>{
-    if(chat_config) summarize_documnet();
-  },[chat_config])
+    summarize_documnet();
+  },[])
  
   
   return (
