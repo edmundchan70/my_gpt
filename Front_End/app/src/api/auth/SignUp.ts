@@ -1,8 +1,8 @@
  
 import service from "../request/request";
-import { AuthDto } from "./DTO/AuthDto.dto";
+import { signUpDto } from "./DTO/signUpDto";
 
-export async function SignUp(AuthDto: AuthDto) {
+export async function SignUp(AuthDto: signUpDto) {
     try {
         const response = await service({
             url: '/auth/local/signup',

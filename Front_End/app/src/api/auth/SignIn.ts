@@ -1,8 +1,9 @@
 import { AxiosError } from "axios";
 import service from "../request/request";
-import { AuthDto } from "./DTO/AuthDto.dto";
+import { signInDto } from "./DTO/signInDto";
+ 
 
-export async function Signin(AuthDto: AuthDto) {
+export async function Signin(AuthDto: signInDto) {
     try {
         const response = await service({
             url: '/auth/local/signIn',

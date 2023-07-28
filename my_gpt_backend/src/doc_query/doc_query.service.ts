@@ -14,9 +14,10 @@ import { S3Service } from 'src/S3/S3.service';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { DB_to_text_chunk, text_chunk_to_DB, text_chunktoString } from './util/HNSWLib';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { user_info } from './DTO/user_info.dto';
+import { user_info } from '../auth/DTO/user_info.dto';
 import { conversation } from './DTO/conversation.dto';
 import { chat_body } from './DTO/chat_body.dto';
+import { AuthService } from 'src/auth/auth.service';
  
 
 
@@ -26,7 +27,8 @@ export class doc_query_service {
      private pineConeService: pineconeService,
      private prisma: PrismaService,
      private jwtService: JwtService ,
-     private S3 : S3Service
+     private S3 : S3Service,
+     private authService: AuthService
      ) { }
   
   async file_to_text_chunk(file: Express.Multer.File, token: string) {
@@ -131,7 +133,7 @@ export class doc_query_service {
     return { msg: text }
   }
   async get_user_document_list(token: string){
-   const decode_info :user_info = await this.decode_user_from_token(token);
+   const decode_info :user_info = await this.authService.decode_user_from_token(token);
    const {sub} = decode_info;
  
    return await this.prisma.document.findMany({
@@ -215,7 +217,7 @@ export class doc_query_service {
   }
   async get_userId_by_token(token: string):Promise<number> {
     console.log(token)
-    const decode_info :user_info = await this.decode_user_from_token(token);
+    const decode_info :user_info = await   this.authService.decode_user_from_token(token);
     console.log(decode_info)
     const {sub} = decode_info;
     return sub 
@@ -258,15 +260,7 @@ export class doc_query_service {
       
     
   }
-  async decode_user_from_token(token:string) :Promise<user_info>{
-    try {
-      const decodedData = await this.jwtService.decode(token.slice("Bearer ".length));
-      return decodedData as user_info;
-    } catch (error) {
-      // Handle error, if needed
-      throw new Error("Unable to decode user information");
-    }
-  }
+ 
   async update_chat(doc_id:string, owner_id:number ,Message:string,role:"AI"|"HUMAN"){
     return await this.prisma.conversation.create({
       data: {

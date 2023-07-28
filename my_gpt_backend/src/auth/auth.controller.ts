@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { AtGuard, RtGuard } from 'src/common/guards';
 import { GetCurrentUser, GetCurrentUserId, Public } from 'src/common/decorators';
+import { signUpDto } from './DTO/signUp.dto';
  
  
 @Controller('auth')
@@ -15,7 +16,7 @@ export class AuthController {
     @Public()
     @Post('local/signup')
     @HttpCode(HttpStatus.CREATED)
-    signupLocal(@Body() Body: AuthDto) : Promise<Tokens>{
+    signupLocal(@Body() Body: signUpDto) : Promise<Tokens>{
         return this.authService.signupLocal(Body);
     }
     @Public()

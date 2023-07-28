@@ -68,7 +68,7 @@ function LoginForm({ }: Props) {
           </Typography>
 
           <TextField type='email' inputRef={emailRef} label="Email" variant="outlined" fullWidth helperText="Incorrect entry." />
-          <TextField inputRef={passwordRef} label="Password" variant="outlined" fullWidth defaultValue={""}/> 
+          <TextField type="password" inputRef={passwordRef} label="Password" variant="outlined" fullWidth defaultValue={""}/> 
 
           <Button sx={{ padding: '0.5rem' }} onClick={handle_Login} variant="contained">Submit</Button>
         </Paper>

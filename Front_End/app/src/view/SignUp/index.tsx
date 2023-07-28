@@ -12,6 +12,8 @@ type Props = {}
 function SignUp_Page({}: Props) {
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
+  const firstNameRef = useRef<HTMLInputElement | null>(null);
+  const lastNameRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
   const Box_sx: SxProps<Theme> = {
     display: 'flex',
@@ -34,24 +36,27 @@ function SignUp_Page({}: Props) {
     padding: '5rem',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: "3rem"
+    gap: "2rem"
   }
   const  handle_SignUp =async  () => {
     const email :string    = emailRef.current!.value;
     const password :string = passwordRef.current!.value;
+    const firstName :string    = firstNameRef.current!.value;
+    const lastName :string = lastNameRef.current!.value;
     console.log(emailRef.current)
     if ((email===undefined )){ alert("Please enter your email address");return}
     if ((password===undefined )) {alert("Please enter your password");return}
+    if ((firstName===undefined )){ alert("Please enter your email address");return}
+    if ((lastName===undefined )) {alert("Please enter your password");return}
     console.log(email,password)
-    const resp = await SignUp({email,password});
+    const resp = await SignUp({email,password,firstName,lastName});
     //success, save token to session 
     if(resp.statusText==='Created'){
         const {access_token , refresh_token} = resp.data; 
       //  console.log(access_token, refresh_token)
-      console.log(access_token , refresh_token)
+        console.log(access_token , refresh_token)
         Cookies.set('access_token',access_token , {expires:0.0416}); //1 == 1 day
         Cookies.set('refresh_token',refresh_token, {expires:7});
-  
         navigate('/')
     }
     else { alert(resp)
@@ -69,9 +74,15 @@ function SignUp_Page({}: Props) {
           <Typography variant='h4' component={'p'} sx={{ fontWeight: "bold" ,padding:'0.5rem'}}>
            Sign Up to Chat with PDF!
           </Typography>
-
-          <TextField type='email' inputRef={emailRef} label="Email" variant="outlined" fullWidth helperText="Incorrect entry." />
-          <TextField inputRef={passwordRef} label="Password" variant="outlined" fullWidth defaultValue={""}/> 
+          <Box
+            display={'flex'}
+            gap={'50px'}
+            >
+          <TextField type='First Name' inputRef={firstNameRef} label="First Name *" variant="outlined"   />
+          <TextField type='Last Name' inputRef={lastNameRef} label="Last Name *" variant="outlined"   />
+          </Box>
+          <TextField type='email' inputRef={emailRef} label="Email" variant="outlined" fullWidth />
+          <TextField type="password" inputRef={passwordRef} label="Password" variant="outlined" fullWidth defaultValue={""}/> 
 
           <Button sx={{ padding: '0.5rem' }} onClick={handle_SignUp} variant="contained">Submit</Button>
         </Paper>

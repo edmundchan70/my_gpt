@@ -10,10 +10,12 @@ import { JwtModule } from '@nestjs/jwt';
  
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { S3_Module } from 'src/S3/S3.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
 
 @Module({
     imports:[openAiModule,ConfigModule.forRoot(),pineconeModule,JwtModule.register({}),PrismaModule,S3_Module],
     controllers: [doc_query_controller],
-    providers: [doc_query_service],
+    providers: [doc_query_service,AuthService],
 })
 export class doc_query_module {};

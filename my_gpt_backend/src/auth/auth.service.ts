@@ -4,6 +4,8 @@ import { AuthDto } from './DTO';
 import *  as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { jwtPayload } from './DTO/jwtPayload.dto';
+import { signUpDto } from './DTO/signUp.dto';
+import { user_info } from './DTO/user_info.dto';
  
 @Injectable()
 export class AuthService {
@@ -22,12 +24,14 @@ export class AuthService {
         }
        
     }
-    async signupLocal(Body : AuthDto){
-        const hash = await this.hashData(Body.password);
+    async signupLocal({email,password,firstName,lastName} : signUpDto){
+        const hash = await this.hashData(password);
         const newUser = await this.prisma.user.create({
             data:{
-                email: Body.email,
-                hash: hash
+                email: email,
+                hash: hash,
+                firstName:firstName,
+                lastName:lastName
             }
         })
         const tokens = await this.getToken(
@@ -115,4 +119,13 @@ export class AuthService {
         return tokens; 
 
     }     
+    async decode_user_from_token(token:string) :Promise<user_info>{
+        try {
+          const decodedData = await this.jwtService.decode(token.slice("Bearer ".length));
+          return decodedData as user_info;
+        } catch (error) {
+          // Handle error, if needed
+          throw new Error("Unable to decode user information");
+        }
+      }
 }
