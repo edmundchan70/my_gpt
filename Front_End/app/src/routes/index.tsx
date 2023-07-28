@@ -2,6 +2,7 @@
  
 import Home from "../view/Home";
 import Login from "../view/Login";
+import SignUp from "../view/SignUp";
 
 export const  routes = [
     {
@@ -14,6 +15,9 @@ export const  routes = [
     },{
         path:"/",
         element: <Home />
-    },  
+    },  {
+        path:"/Signup",
+        element:<SignUp />
+    }
     
 ]

@@ -1,22 +1,22 @@
 import { Avatar, Box, Button, Container, FormControl, Grid, Grow, Paper, SxProps, TextField, Theme, Typography, colors } from "@mui/material"
 
 import LockIcon from '@mui/icons-material/Lock';
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import LoginForm from "./LoginForm";
+import { useNavigate } from "react-router-dom";
 
 type Props = {}
 
 function Login({ }: Props) {
-
+ 
   const Container_sx: SxProps<Theme> = {
     height: '100vh',
     width: '100%',
     backgroundColor: colors.blue[300],
-    textAlign: "center",
-
+    textAlign: "center"
   }
-  
- 
+  const nav = useNavigate();
+
   return (
     <>
       <Grid container padding={0} >
@@ -25,25 +25,29 @@ function Login({ }: Props) {
         </Grid>
 
         <Grid item xs={4}>
+        
+          
           <Box display="flex"
-          flexDirection={'column'}
+            flexDirection={'column'}
             justifyContent="center"
             alignItems="center"
             sx={Container_sx}>
 
-            <Typography variant='h4' component={'p'} sx={{ fontWeight: "bold", color: 'white', alignItems: 'center' ,padding:'2rem'}}>
+            <Typography variant='h4' component={'p'} sx={{ fontWeight: "bold", color: 'white', alignItems: 'center', padding: '2rem' }}>
               New Here?
             </Typography>
-           
-            <Typography   component={'p'} sx={{ color:'white',  alignItems: 'center',fontSize:"20px"  ,padding:'3rem'}}>
-           Sign Up   and start chatting with your documents!
+
+            <Typography component={'p'} sx={{ color: 'white', alignItems: 'center', fontSize: "20px", padding: '3rem' }}>
+              Sign Up   and start chatting with your documents!
             </Typography>
 
-            <Button variant="outlined"  sx={{backgroundColor:"white" }}>
-                Sign Up
+            <Button variant="outlined" onClick={() => nav('/signUp')} sx={{ backgroundColor: "white" }}>
+              Sign Up
             </Button>
-          </Box>
+          </Box> 
         </Grid>
+
+
       </Grid>
 
     </>
