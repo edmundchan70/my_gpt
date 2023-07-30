@@ -20,9 +20,7 @@ function Header({}: Props) {
           Chat PDF
       </Typography>
     <Box>
-      <Button variant='outlined' sx={{color:"white","&:hover":{bgcolor:"white",color:colors.blue[600]}}}> 
-        DashBoard
-      </Button>
+      
    
       <Button variant='outlined' onClick={logout}   sx={{color:"white" ,"&:hover":{bgcolor:"white",color:colors.blue[600]}}}>
       <ExitToAppIcon/>

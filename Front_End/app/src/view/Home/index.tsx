@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom'
  
  
  
-import Header from '../../comp/Header'
+ 
 import Navbar from '../../comp/Navbar'
  
 import { getAccessToken } from '../../util/getToken/getToken'
+import Header from '../../comp/Header'
 
 
 type Props = {}
@@ -23,18 +24,10 @@ try{
  
   return (
     <>
-      <Header />
-     
+
+           <Header />
            <Navbar />
      
-       
- 
-         
-    
-       
-
-
- 
     </>
 
 

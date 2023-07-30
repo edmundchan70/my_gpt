@@ -1,5 +1,4 @@
 
- 
 import Home from "../view/Home";
 import Login from "../view/Login";
 import SignUp from "../view/SignUp";
