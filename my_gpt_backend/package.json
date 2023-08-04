@@ -1,5 +1,8 @@
 {
   "name": "my_gpt_backend",
+  "engines": {
+    "node": ">16.3"
+  },
   "version": "0.0.1",
   "description": "",
   "author": "",
