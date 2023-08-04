@@ -40,7 +40,7 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
             }catch(err:any){
                 console.log('err,upper' ,err)
                 alert("Refresh Key not found, please re-login!")
-                window.location.href ="http://localhost:3000/login"
+                window.location.href =process.env.PROD_URL!
                 return  ; //
             } 
         }
