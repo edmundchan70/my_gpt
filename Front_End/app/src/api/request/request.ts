@@ -1,9 +1,8 @@
 import Axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios"
 import Cookies from "js-cookie";
-import { getAccessToken } from "../../util/getToken/getToken";
  
  
-const BASE_URL  ='http://localhost:1919'
+const BASE_URL  =process.env.REACT_APP_TEST_SERVER
 const onResponse = (response: AxiosResponse): AxiosResponse => {
     return response;
   };
