@@ -23,7 +23,6 @@ type Props = {
 function Message_container({ doc_id }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
  
-  console.log('chat_config: ',doc_id)
   const [Dialog, setDialog] = useState<Message[]>([]);
 
   const handle_input_msg = async() => {

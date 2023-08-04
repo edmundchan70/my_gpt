@@ -13,7 +13,7 @@ function Display_Pdf({ File }: Props) {
  
   const [numPages, setNumPages] = useState<number | null>(null);
   
-   console.log(File)
+ 
   return  File instanceof Uint8Array?
  
        <Document

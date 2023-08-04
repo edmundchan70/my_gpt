@@ -24,7 +24,7 @@ function Navbar({ }: Props) {
   //function
   const handleFileInputChange = async (event: any) => {
     const selectedFile : File = event.target.files[0];
-    console.log(selectedFile)
+ 
     
  
     const resp = await upload_file(selectedFile);
@@ -37,11 +37,11 @@ function Navbar({ }: Props) {
   };
   const triggerUpload = () => {
     const target_element = document.getElementById('upload');
-    console.log(target_element)
+ 
     target_element?.click();
   }
   const loadDocument = async (DocId: string,FileName:string) => {
-    console.log(DocId)
+ 
     const  resp = await get_file_from_s3(DocId);
     if(resp === undefined || resp === null) {alert("ERROR LOADING FILE (CONNECTING TO S3)")
      return;}
@@ -76,7 +76,7 @@ function Navbar({ }: Props) {
     flexDirection: "column"
   }
  
-  console.log(Document)
+ 
   useEffect(()=>{
     load_user_info()
     load_user_document()

@@ -17,7 +17,7 @@ function PlayGround({ doc_id ,File}: Props) {
     
  
       
-            {console.log('cgat _congif')}
+   
               <Container  sx={{display: 'flex',justifyContent:"center",gap:"40px"}}>
                   <Message_container  doc_id={doc_id} />
                   <Display_Pdf File={File} />
