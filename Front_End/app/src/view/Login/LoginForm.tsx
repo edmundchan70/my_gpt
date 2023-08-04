@@ -43,13 +43,17 @@ function LoginForm({ }: Props) {
     if ((password===undefined )) {alert("Please enter your password");return}
     const resp = await Signin({email,password});
     //success, save token to session 
-    if(resp.statusText==='OK'){
+    if(resp.status===200){
         const {access_token , refresh_token} = resp.data; 
-      //  console.log(access_token, refresh_token)
+        console.log(access_token, refresh_token)
         Cookies.set('access_token',access_token , {expires:0.0104 }); //1 == 1 day
         Cookies.set('refresh_token',refresh_token, {expires:7});
+       
         navigate('/')
-    }else  alert(resp)
+    }else {
+     
+    
+      alert(resp)}
   }
   useEffect(()=>{
     if(getAccessToken())
