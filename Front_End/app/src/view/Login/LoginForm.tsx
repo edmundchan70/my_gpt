@@ -51,7 +51,7 @@ function LoginForm({ }: Props) {
        
         navigate('/')
     }else {
-     
+     console.log(resp)
     
       alert(resp)}
   }
