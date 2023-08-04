@@ -40,7 +40,7 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
             }catch(err:any){
                 console.log('err,upper' ,err)
                 alert("Refresh Key not found, please re-login!")
-                
+
                 window.location.href =process.env.PROD_URL!
                 return  ; //
             } 
@@ -59,6 +59,6 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
   
   let service =setupInterceptorsTo(Axios.create({
     baseURL:BASE_URL  ,
-    timeout:30000
+    timeout:100000
 }))
 export default service;
