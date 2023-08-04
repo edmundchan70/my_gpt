@@ -2,7 +2,7 @@ import Axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios"
 import Cookies from "js-cookie";
  
  
-const BASE_URL  =process.env.REACT_APP_TEST_SERVER
+const BASE_URL  =process.env.REACT_APP_PROD_SERVER
 const onResponse = (response: AxiosResponse): AxiosResponse => {
     return response;
   };
