@@ -6,3 +6,4 @@ declare module "*.svg" {
     export default content;
   }
   declare module "*.pdf";
+  declare module 'react-scroll-to-bottom'

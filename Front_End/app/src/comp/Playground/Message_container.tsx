@@ -14,6 +14,7 @@ import { Document_id } from '../../api/chat/DTO/Document_id.dto';
 import { retrieve_conversation } from '../../api/chat/retreive_conversation';
 import { conversation } from '../../api/chat/DTO/conversation.dto';
 import { AxiosResponse } from 'axios';
+import LoadingAnimation from '../loading';
  
  
 type Props = {
@@ -22,9 +23,9 @@ type Props = {
 
 function Message_container({ doc_id }: Props) {
   const inputMessage = useRef<HTMLInputElement | null>(null);
- 
+  const overflow_Ref =useRef<any>(null);
   const [Dialog, setDialog] = useState<Message[]>([]);
-
+  const [loading, setloading] = useState<Boolean>(false)
   const handle_input_msg = async() => {
     if (!inputMessage.current?.value) alert("PLEASE ENTER SOMETHING!")
     //handle user input , update dialog
@@ -39,6 +40,7 @@ function Message_container({ doc_id }: Props) {
       doc_id:doc_id,
       query: input_msg
     }
+    setloading(true)
     //send user respond to openAI with corresponding data 
     const resp  = await chat(chat_body);  
  
@@ -49,6 +51,7 @@ function Message_container({ doc_id }: Props) {
    
     
     setDialog((prev) => [...prev!, AI_msg]);
+    setloading(false)
   }
  
   const get_conversation= async (doc_id:string)=>{
@@ -66,6 +69,7 @@ function Message_container({ doc_id }: Props) {
 
     })
   }
+ 
   const container_AI  :SxProps<Theme>  =  {
  
     marginLeft:'10px', 
@@ -91,45 +95,63 @@ function Message_container({ doc_id }: Props) {
     get_conversation(doc_id);
    }
   },[doc_id])
- 
   
+  useEffect(()=>{
+    if (overflow_Ref.current) {
+      overflow_Ref.current.scrollIntoView({ behaviour: "smooth" });
+    }
+  },[Dialog])
   return (
     <>
        
-       
-        <Paper elevation={5} sx={{width:'80%',marginTop:'30px',backgroundColor:'rgba(0,0,0, 0.1)'}} >
+       <Paper elevation={5} sx={{width:'80%',marginTop:'30px',backgroundColor:'rgba(0,0,0, 0.1)'}} >
         
-
-          
+ 
           <Box sx={{ height: "80vh", overflow:"scroll"}}>
           
            
-            {Dialog&&Dialog.map((item :any) => {
-              return (
+         
+          {Dialog&&Dialog.map((item :any , i : number) => {
+            return (
 
-                <Container  sx={item.role === "AI" ? container_AI:
-                                                    container_human}>
-              {item.role === "AI"&& 
-                    <Avatar sx={{margin:"auto"}}>
-                    <SmartToyIcon />
-                </Avatar>}
-                <Container sx={{overflow:'scroll' ,display:"flex",backgroundColor:'white',borderRadius:"30px",padding:'1rem'}}>  
-              
+              <Container   key={i} sx={item.role === "AI" ? container_AI:
+                                                  container_human}>
+            {item.role === "AI"&& 
+                  <Avatar sx={{margin:"auto"}}>
+                  <SmartToyIcon />
+              </Avatar>}
+              <Container
+               sx={{ overflowY:"auto", scrollBehavior:"smooth",display:"flex",backgroundColor:'white',borderRadius:"30px",padding:'1rem'}}>  
             
-                    <Typography sx={{fontSize:'14px'}}> {item.msg}</Typography>
-                    
-                </Container>
-                {item.role !== "AI"&& 
-                    <Avatar sx={{margin:"auto"}}>
-                    <PersonIcon />
-                </Avatar>}
+          
+                  <Typography sx={{fontSize:'14px'}}> {item.msg}</Typography>
+                  
+              </Container>
+              {item.role !== "AI"&& 
+                  <Avatar sx={{margin:"auto"}}>
+                  <PersonIcon />
+              </Avatar>}
+              </Container>)
 
-                
-                </Container>)
+              
+          })}
+
+       
+       
+         {loading&& <Container  sx={{overflow:'scroll' ,display:"flex",borderRadius:"30px"}}>
+          <Avatar  >
+                  <SmartToyIcon />
+              </Avatar>
+              <LoadingAnimation/>
+          </Container>
+       }
+         
+         <li ref={overflow_Ref}></li>
+        </Box>
 
 
-            })}
-          </Box>
+        
+           
           <Grid container sx={{ display: "flex", width: "100%", alignItems: "center" ,padding:"1rem"}} >
               
             <Grid item xs={11}>

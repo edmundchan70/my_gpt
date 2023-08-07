@@ -2,7 +2,7 @@ import Axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios"
 import Cookies from "js-cookie";
  
  
-const BASE_URL  =process.env.REACT_APP_PROD_SERVER
+const BASE_URL  =process.env.REACT_APP_TEST_SERVER
 const onResponse = (response: AxiosResponse): AxiosResponse => {
     return response;
   };
@@ -18,7 +18,10 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
                         Authorization: 'Bearer ' +refresh_token 
                     }
                 }); 
+             
+                console.log("refreshed token")
                 const new_access_token = resp.data.access_token
+                console.log(new_access_token)
                 Cookies.set('access_token',new_access_token);
                
                 // delay original requests until authorization has been completed
@@ -38,10 +41,10 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
                 
                 return origin_resp
             }catch(err:any){
-                console.log('err,upper' ,err)
-                alert("Refresh Key not found, please re-login!")
-                console.log(process.env.PROD_URL!)
-                window.location.href =process.env.REACT_APP_PROD_URL!
+                console.log('err' ,err)
+             
+                window.location.href = "http://localhost:3000/Login"
+               // window.location.href =process.env.REACT_APP_PROD_URL!
                 return  ; //
             } 
         }
