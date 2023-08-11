@@ -109,7 +109,7 @@ export class AuthService {
                 id:userId
             }
         })
-        console.log('refresh_token is called ')
+        console.log('refresh_token is called by user : ' , userId)
         if(!user) throw new ForbiddenException("NO USER FOUND");
         const rtMatches = await bcrypt.compare(refresh_token,user.hashedRT);
         if(!rtMatches) throw new ForbiddenException("Access denied(Hashes error)")

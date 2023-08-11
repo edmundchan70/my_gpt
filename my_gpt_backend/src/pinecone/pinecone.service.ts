@@ -13,19 +13,12 @@ export class pineconeService  {
             environment:process.env.pinecone_env,
             apiKey:process.env.pinecone_api_key
         })
+     return this.pinecone_client.Index(process.env.pinecone_index);
     }
-    async check_index_exist(index_name:string){
+    async check_index_exist(index_name:string=process.env.pinecone_index){
         const exist_list = await this.pinecone_client.listIndexes();
         return exist_list.includes(index_name)    
     }
-    async create_index(index_name:string){
-        await this.setUp()
-        await this.pinecone_client.createIndex({
-            createRequest:{
-                name:index_name,
-                dimension:512
-            }
-        })
-    }
+  
 }
 

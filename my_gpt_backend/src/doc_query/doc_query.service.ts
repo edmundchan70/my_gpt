@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
-import { RetrievalQAChain } from "langchain/chains"
+import { RetrievalQAChain, VectorDBQAChain } from "langchain/chains"
 import { text_chunk } from './DTO/text_chunk.dto';
 import { openAiService } from 'src/openAI/openAi.service';
 import { pineconeService } from 'src/pinecone/pinecone.service';
@@ -18,7 +18,7 @@ import { user_info } from '../auth/DTO/user_info.dto';
 import { conversation } from './DTO/conversation.dto';
 import { chat_body } from './DTO/chat_body.dto';
 import { AuthService } from 'src/auth/auth.service';
- 
+ import { PineconeStore } from "langchain/vectorstores/pinecone";
 
 
 @Injectable()
@@ -46,7 +46,7 @@ export class doc_query_service {
     const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 300 });
     const split_text = await splitter.splitDocuments(docs);
  
-    console.log("COMPLETED REQIESRT file_to_text_chunk")
+    
     //filter out the metadata in output
     const output = split_text.map(item => {
       const { metadata, ...newItem } = item;
@@ -74,16 +74,25 @@ export class doc_query_service {
     }
     //Init S3 command and save the file 
     await this.put_file_to_S3(doc_id,file);
-    
-    console.log(id)
+    console.log("SAVED TO S3")
+ 
     //save text chunk to db
+
     const text_chunk_db = text_chunk_to_DB(split_text,doc_id,id)
-    console.log(text_chunk_db)
+    
     await this.prisma.textChunk.createMany({
       data: text_chunk_db
     })
-    //generate the summary 
-   
+    console.log("SUCCESSFUL ADDED RECORD THROUGH PRISMA")
+     //connect pinecone here 
+     const pineCone_index = await this.pineConeService.setUp()
+     
+     console.log("\n Successfully setup pinecone ")
+     const resp = await PineconeStore.fromDocuments(split_text, new TensorFlowEmbeddings(),{
+         pineconeIndex:pineCone_index
+     });
+     console.log(resp,"\n Successfully added embeding")
+     console.log("COMPLETED REQIESRT file_to_text_chunk")
     return {
       doc_id: doc_id,
       FileName:fileName,
@@ -132,8 +141,61 @@ export class doc_query_service {
     })
     return { msg: text }
   }
+  async chat_retrievalQAChain_PINECONE({doc_id,query}: chat_body , token: string) {
+    const owner_id = await this.get_userId_by_token(token)
+    console.log("chat_retrievalQAChain call activated")
+    const model = new OpenAI({
+      openAIApiKey: process.env.OPENAI_API_KEY_TEST,
+      modelName: "gpt-4"
+    })
+    console.log('Vector store init')
+
+    //connect pinecone here 
+    const pineCone_index = await this.pineConeService.setUp()
+    /*
+    const vectorStore = await PineconeStore.fromDocuments(text_chunk_array, new TensorFlowEmbeddings(),{
+        pineconeIndex:pineCone_index
+    });
+    */
+   const vectorStore = await PineconeStore.fromExistingIndex(
+    new TensorFlowEmbeddings(),
+    {pineconeIndex:pineCone_index}
+   )
+    const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
+      k:5,
+      returnSourceDocuments: true
+    });
+    console.log("Querying llm call activated",query)
+    const {text} = await chain.call({
+      query: query
+    });
+    console.log(text)
+    //save to db 
+    const HUMAN_MESSAGE : conversation={
+      doc_id: doc_id,
+      owner_id: owner_id,
+      role: "HUMAN",
+      Message:query
+    }
+    const AI_RESPONSE: conversation={
+      doc_id: doc_id,
+      owner_id: owner_id,
+      role: "AI",
+      Message:text
+    }
+    //add HUMAN MESSAGE 
+    await this.prisma.conversation.create({
+      data:HUMAN_MESSAGE
+    })
+    //add AI Message 
+    await this.prisma.conversation.create({
+      data:AI_RESPONSE
+    })
+    return { msg: text }
+  }
   async get_user_document_list(token: string){
    const decode_info :user_info = await this.authService.decode_user_from_token(token);
+   console.log('get_user_document_list',decode_info)
    const {sub} = decode_info;
  
    return await this.prisma.document.findMany({

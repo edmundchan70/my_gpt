@@ -11,11 +11,18 @@ export class user_service{
         private authService  : AuthService
     ){}
     async  get_user_info(token : string) : Promise<detail_user_info> {
+ 
         const {sub,email}  = await this.authService.decode_user_from_token(token);
+        console.log(sub,'get_user_infoz')
         const {firstName,lastName} = await this.prisma.user.findUnique({
             where:{
                 id:sub
             }
+        })
+        console.log({
+            firstName: firstName,
+            lastName: lastName,
+            email: email
         })
         return {
             firstName: firstName,
