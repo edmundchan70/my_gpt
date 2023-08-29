@@ -8,11 +8,12 @@ import { openAiModule } from '../openAI/openAi.module';
  
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { user_Module } from 'src/user/user.module';
+import { pineconeModule } from 'src/pinecone/pinecone.module';
  
  
 
 @Module({
-  imports: [AuthModule ,doc_query_module,openAiModule,PrismaModule,user_Module],
+  imports: [AuthModule ,doc_query_module,openAiModule,PrismaModule,user_Module,pineconeModule],
  
 })
 export class AppModule {}

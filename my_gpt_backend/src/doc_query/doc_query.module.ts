@@ -12,10 +12,12 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { S3_Module } from 'src/S3/S3.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
+import { pineconeService } from 'src/pinecone/pinecone.service';
+import { PineconeClient } from '@pinecone-database/pinecone';
 
 @Module({
     imports:[openAiModule,ConfigModule.forRoot(),pineconeModule,JwtModule.register({}),PrismaModule,S3_Module],
     controllers: [doc_query_controller],
-    providers: [doc_query_service,AuthService],
+    providers: [doc_query_service,AuthService,pineconeService,PineconeClient],
 })
 export class doc_query_module {};
